@@ -1,0 +1,307 @@
+Selenium WebDriver to powszechnie stosowany framework automatyzacji przeglądarek internetowych, używany w połączeniu z różnymi narzędziami, który swoją popularność zawdzięcza schludnemu i czystemu projektowi obiektowemu. Selenium WebDriver można zintegrować z innymi narzędziami (takimi jak Maven, Ant czy Gradle) w celu opracowania automatycznych testów.
+
+Selenium WebDriver obsługuje testy kompatybilności przeglądarek dla każdej popularnej przeglądarki, włączając w to przeglądarki Google Chrome, Mozilla Firefox, Internet Explorer, Microsoft Edge i inne poprzez tzw. sterowniki (drivery). Należy pamiętać, że sterowniki do danej przeglądarki muszą być zawarte w projekcie i mieć prawa wykonywalności w systemie. Drugim problemem jest fakt, że mamy różne sterowniki pod różne systemy operacyjne (na przykład Linux i Windows). 
+
+Selenium WebDriver API steruje przeglądarką tak, jak robiłby to prawdziwy użytkowniki. Należy tutaj wspomnieć, że uruchamiane przeglądarki są "czyste" tzn. nie mają żadnych zainstalowanych rozszerzeń, dodatków i innych rzeczy.
+
+Selenium WebDriver może być używany nie tylko z językiem Java, ale również C#, Python czy Ruby.
+
+Więcej informacji o narzędziu Selenium WebDriver można znaleźć pod następującym linkiem: https://www.seleniumhq.org/
+
+
+
+Poniższa tabela przedstawia podstawowe metody (nie wszystkie), które obsługuje sterownik używany przez Selenium WebDriver:
+
+Nazwa metody	Opis metody
+get(url)	Ustawia driver do przejścia na stronę podany przez parametr url
+close()	Zamyka aktualnie aktywne okno przeglądarki
+quit()	Zatrzymuje działający sterownik i zamyka wszystkie okna przeglądarki
+getTitle()	Pobiera tytuł aktualnej strony
+getCurrentUrl()	Pobiera adres URL aktualnej strony
+getPageSource()	Pobiera całe źródło załadowanej strony i pozwana sprawdzić użytkownikowi dowolny tekst na stronie. Nie jest to zalecana metoda dla stron ładujących JavaScript asynchronicznie
+Poniższy kod przedstawia podstawową konfigurację i test narzędzia Selenium WebDriver:
+
+package webdemo.seleniumDemo;
+
+import static org.junit.Assert.*;
+
+import java.util.concurrent.TimeUnit;
+
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+public class GoogleTest {
+	
+	private static WebDriver driver;
+
+	@BeforeAll
+	public static void setUpDriver(){
+		System.setProperty("webdriver.gecko.driver", "resources/geckodriver");
+		driver = new FirefoxDriver();
+		// Implicity wait -> max czas na znalezienie elementu na stronie
+		driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+	}
+
+	@BeforeEach
+	public void setUp() throws Exception {
+		driver.get("https://duckduckgo.com/");
+	}
+
+	@AfterAll
+	public static void tearDown() throws Exception {
+		driver.quit();
+	}
+
+	@Test
+	public void testTitlePage() {
+    	assertEquals("DuckDuckGo — Privacy, simplified.", driver.getTitle());
+	}
+
+	@Test
+	public void testSource(){
+		String source = driver.getPageSource();
+		assertTrue(source.contains("DuckDuckGo"));
+	}
+
+}
+
+
+
+Aplikacje webowe i strony WWW zazwyczaj są pisane z pomocą mieszanki formatów HTML, CSS i kodu JavaScript. Na podstawie działań użytkownika, takich jak przejście pod adres URL witryny WWW lub kliknięcie przycisku na przykład Prześlij, przeglądarka wysyła żądania do serwera WWW. Proces serwera WWW przetwarza to żądanie i odsyła do przeglądarki odpowiedź zawierającą kod HTML wraz z zasobami (CSS oraz JavaScript). Informacje otrzymane z serwera w przeglądarce służą do renderowania strony WWW (dlatego pokazują się elementy wizualne takie jak tabele, formularze, pola wyboru, ilustracje i wiele innych). 
+
+Przeanalizowana strona WWW nazywamy inaczej drzewem modelu DOM (Document Object Model). 
+
+Badanie elementów na stronie jest bardzo proste: w przeglądarce MozillaFirefox zaleca się zainstalowanie rozszerzenia FireBug, natomiast w Google Chrome używamy po prostu opcji zbadaj element klikając prawym przyciskiem myszy.
+
+Wyszukiwanie elementów w Selenium WebDriver odbywa się za pomocą metody findElement() oraz findElements(). Metoda findElement() zwraca egzemplarz klasy WebElement, który znajduje się w modelu DOM na podstawie określonych lokalizatorów nazywanych także kryteriami wyszukiwania. Jeśli nie znajdzie się szukanego elementu, to sterownik zgłasza wyjątek NoSuchElementFoundException. Metoda findElements() zwraca listę obiektów typu WebElement spełniających podane kryteria wyszukiwania. Jeśli elementy nie zostaną znalezione, zwraca po prostu pustą listę.
+
+Poniższa tabela przedstawia kryteria wyszukiwania elementów przy pomocy metody findElement() lub findElements():
+
+Kryterium wyszukiwania oraz składnia	Opis
+Na podstawie ID: driver.findElement(By.id(id_elementu))	Umożliwia znalezienie elementów na podstawie atrybutu ID
+Według nazwy: driver.findElement(By.name(nazwa))	Umożliwia znalezienie elementów na podstawie atrybutu name
+Według nazwy klasy: driver.findElement(By.className(nazwa_klasy))	Umożliwia znalezienie elementów na podstawie nazwy klasy
+Według nazwy znacznika: driver.findElement(By.tagName(nazwa))	Umożliwia znalezienie elementów na podstawie znacznika HTML
+Według tekstu linka: driver.findElement(By.linkText(tekst_linka))	Umożliwia znalezienie elementów na podstawie łącza tekstu
+Według częściowego linka: driver.findElement(By.partialLinkText(tekst))	Umożliwia znalezienie elementów na podstawie fragmentu tekstu w linku
+Według CSS: driver.findElement(By.cssSelector(selektor))	Umożliwia znalezienie elementów na podstawie selektora CSS
+Poniższy kod realizuje znajdowanie elementów na stronie google.pl:
+
+package webdemo.seleniumDemo;
+
+import static org.junit.Assert.*;
+
+import java.util.concurrent.TimeUnit;
+
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.firefox.FirefoxDriver;
+
+public class FindTest {
+	
+	//Przykłady znajdowania elementów na stronie www bez elementów xpath
+	
+	private static WebDriver driver;
+
+	@BeforeAll
+	public static void setUpDriver(){
+		System.setProperty("webdriver.gecko.driver", "resources/geckodriver");
+		driver = new FirefoxDriver();
+		// Implicity wait -> max czas na znalezienie elementu na stronie
+		driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+	}
+
+	@BeforeEach
+	public void setUp() throws Exception {
+    	driver.get("https://www.google.pl");
+	}
+
+	@AfterAll
+	public static void tearDown() throws Exception {
+		driver.quit();
+	}
+
+	@Test
+	public void findById() {
+		WebElement element = driver.findElement(By.id("searchform"));
+		assertNotNull(element);
+	}
+	
+	@Test
+	public void findByName() {
+		WebElement element = driver.findElement(By.name("q"));
+		assertNotNull(element);
+	}
+	
+	@Test
+	public void findByClass() {
+		WebElement element = driver.findElement(By.className("gsfi"));
+		assertNotNull(element);
+	}
+	
+	@Test
+	public void findBylinkText() {
+		WebElement element = driver.findElement(By.linkText("Gmail"));
+		assertNotNull(element);
+	}
+	
+	@Test
+	public void findByPartiallinkText() {
+		WebElement element = driver.findElement(By.partialLinkText("ma"));
+		assertNotNull(element);
+	}
+	
+	@Test
+	public void findByTagName() {
+		WebElement element = driver.findElement(By.tagName("div"));
+		assertNotNull(element);
+	}
+	
+	@Test
+	public void findByCssSelector() {
+		WebElement element = driver.findElement(By.cssSelector("input.gsfi"));
+		assertNotNull(element);
+	}
+
+
+}
+
+
+
+Istnieje również możliwość znajdowania elementów poprzez język ścieżek XML (tzw. XPath). Jest to język zapytań używany do wybierania węzłów z dokumentów XML. Wszystkie najważniejsze przeglądarki internetowe implementują specyfikację DOM Level 3 XPath, co zapewnia dostęp do drzewa modelu DOM. Język XPath bazuje na reprezentacji dokumentu XML w formie drzewa. Zapewnia możliwość poruszania się po drzewie i wybierania węzłów z wykorzystaniem różnych kryteriów. 
+
+Jedna z istotnych różnic pomiędzy XPath, a CSS polega na tym, że za pomocą wyrażeń XPath możemy wyszukiwać elementy w modelu DOM wstecz lub w przód, podczas gdy CSS działa tylko w kierunku do przodu. Innymi słowy oznacza to, że za pomocą XPath można lokalizować elementy nadrzędne za pomocą elementów potomych i odwrotnie.
+
+Do wybierania węzłów drzewa XPath używa wyrażeń ścieżek. Węzeł jest wybuerany w wyniku podążania ścieżką. Najbardziej popularne wyrażenia ścieżek za pomocą XPath pokazuje poniższa tabela:
+
+Wyrażenie	Opis wyrażenia
+nazwa_węzła	Wybiera wszystkie węzły z nazwą nazwa_węzła
+/(ukośnik)	Wybiera element lub elementy względne w stosunku do elementu głównego
+//(podwójny ukośnik)	Wybiera w dokumencie węzeł lub węzły spełniające kryteria, niezależnie od jego położenia
+.(kropka)	Reprezentuje dany węzeł
+..(podwójna kropka)	Wybiera rodzica bieżącego węzłą
+@	Reprezentuje atrybut węzła
+Poniższy kod pokazuje przykłady używania języka XPath dla strony google.pl (nie są to wszystkie aspekty, które mogą się pojawić w XPath!!!):
+
+package webdemo.seleniumDemo;
+
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.firefox.FirefoxDriver;
+
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import static org.junit.Assert.assertNotNull;
+
+public class XPathTest {
+
+        //Przykłady znajdowania elementów na stronie www z wykorzystaniem xpath
+
+        private static WebDriver driver;
+
+        @BeforeAll
+        public static void setUpDriver(){
+            System.setProperty("webdriver.gecko.driver", "resources/geckodriver");
+            driver = new FirefoxDriver();
+            // Implicity wait -> max czas na znalezienie elementu na stronie
+            driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+        }
+
+        @BeforeEach
+        public void setUp() throws Exception {
+            driver.get("https://www.google.pl");
+        }
+
+        @AfterAll
+        public static void tearDown() throws Exception {
+            driver.quit();
+        }
+
+        @Test
+        public void testNameNode(){
+            //Pobiera element html
+            WebElement html = driver.findElement(By.xpath("html"));
+            assertNotNull(html);
+        }
+
+        @Test
+        public void testSlashNode(){
+            WebElement element = driver.findElement(By.xpath("html/body/div"));
+            assertNotNull(element);
+        }
+
+        @Test
+        public void testDoubleSlashNode(){
+            List<WebElement> elements = driver.findElements(By.xpath("//input"));
+            for (WebElement element: elements){
+                System.out.println(element.getSize());
+            }
+            assertNotNull(elements);
+        }
+
+        @Test
+        public void testSecondInputNode(){
+            WebElement element = driver.findElement(By.xpath("//input[2]"));
+            assertNotNull(element);
+        }
+
+        @Test
+        public void testDoubleDotsNode(){
+            List<WebElement> elements = driver.findElements(By.xpath("//input/.."));
+            for (WebElement element: elements){
+                System.out.println(element.getTagName());
+            }
+            assertNotNull(elements);
+        }
+
+        @Test
+        public void testAtributeNode(){
+            List<WebElement> elements = driver.findElements(By.xpath("//input[@value]"));
+            for (WebElement element: elements){
+                System.out.println(element.getAttribute("value"));
+            }
+            assertNotNull(elements);
+        }
+
+        @Test
+        public void testExactAtributeNode(){
+            WebElement element = driver.findElement(By.xpath("//input[@value = 'Szukaj w Google']"));
+            System.out.println(element.getAttribute("value"));
+            assertNotNull(element);
+        }
+
+}
+
+
+
+Jak będziemy mieli do czynienia z obiektem typu WebElement, to możemy skorzystać z wielu funkcji, które obsługują dany obiekt. Podstawowe metody (nie wszystkie) zaliczamy clear(), sendKeys(), submit(), click(), getText(), getAttribute() i wiele wiele innych.
+
+Pełna dokumentacja metod obsługujących obiekty typu WebElement znajdują się pod adresem: https://seleniumhq.github.io/selenium/docs/api/java/index.html
+
+Poniższy kod przedstawia bardzo krótki test pokazujący możliwości wyżej wymienionych metod na obiekcie typu WebElement:
+
+@Test
+public void testClick(){
+	driver.findElement(By.id("search_form_input_homepage")).sendKeys("Mateusz Miotk");
+	driver.findElement(By.id("search_button_homepage")).click();
+	assertEquals("Mateusz Miotk at DuckDuckGo", driver.getTitle());
+}
+Cały projekt z użycia Selenium znajduje się pod adresem: https://stepik.org/media/attachments/lesson/207552/seleniumDemo.zip

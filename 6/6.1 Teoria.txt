@@ -1,0 +1,209 @@
+Biblioteka JUnit, przy wszystkich swoich zaletach oraz niezależnie od ilości doświadczenia wielu programistówm jaka została włączona w tę bibliotekę charakteryzuje się jedną poważną wadą: ma ona bardzo mało czytelne definicje warunków testów. Sposób w jaki zapisuje się kryteria testowania, bazuje głównie na technikach powszechnych z początkach istnienia języka Java.
+
+Jednym z najczęstszych błędów jest między innymi zamienianie miejscami wartości oczekiwanej i występującej. Zwyczajowo pierwszym argumentem jest wartość oczekiwana (właściwa, poprawna), a drugim - sprawdzana (rzeczywista, potencjalnie błędna). Tylko taka kolejność zapewnia czytelność zapisu niezależnie od tego, który z programistów zespołu patrzy na kod testu. Tylko ona też gwarantuje sensowność i zrozumiałość komunikatów informujących o niepowodzeniu testu.
+
+Interfejs klasy Assert, która jest stosowana w bibliotece JUnit jest również niepotrzebnie skomplikowany. Zamiast pojedyńczych metod, dający do dyspozycji proste interfejsy weryfikacyjne ściśle dostosowane do typu analizowanych danych, otrzymuje się kilkadziesiąt (ze względu na typy argumentów) metod statycznych, spośród których musimy od razu na początku wybrać właściwą.
+
+Dlatego wyróżnia się dwie alternatywy/rozszerzenia biblioteki JUnit, którymi jest Hamcrest oraz AssertJ.
+
+
+
+Hamcrest to biblioteka służąca do pisania/wykorzystania obiektów typu matcher, pozwalających na deklaratywne definiowanie reguł dopasowania. Przykładami zastosowania takiego matchera jest między innymi sprawdzenie poprawności interfejsu użytkownika czy filtrowanie pewnych danych (podobnie jak to ma miejsce przy użyciu języka SQL). 
+
+Podczas pisania testu trudno odnaleźć równowagę między doprecyzowaniem testu (który może okazać się zbyt przesadnie napisany), a brakiem jego precyzji/prostoty. Takie niedoprecyzowane testy mogą się szybko okazać bezwartościowe, bo np. okaże się że test ten przechodzi dla bardzo bardzo specyficznego przypadku, który może nigdy nie zajść. W narzędziu Hamcrest istnieje wiele matcherów, które jasno i klarownie definiuje co dany test ma sprawdzać i jest to jego najważniejszą zaletą.
+
+Hamcrest występuje nie tylko dla języka Java, ale również dla Pythona, Ruby, PHP, Objective-C, Erlang oraz Swift.
+
+Strona domowa narzędzia Hamcrest (dla języka Java) znajduje się pod adresem: http://hamcrest.org/JavaHamcrest/index
+
+Asercja z platformy JUnit:
+
+Assert.assertEquals(5, friendships.getFriendsList("Joe").size())
+Asercja z narzędzia Hamcrest:
+
+assertThat(friendships.getFriendsList("Joe"), hasSize(5));
+Hamcrest w odróżnieniu od JUnit, prawie zawsze bezpośrednio korzysta z obiektów. W platformie JUnit trzeba uzyskać wielkość w postaci liczby całkowitej, a następnie porównać ją z oczekiwaną liczbą.
+
+Argumenty podawane są w innej kolejności: pierwszym z nich jest rzeczywista wartość.
+
+
+
+Biblioteka AssertJ stanowi implementację tak zwanego płynnego interfejsu programowania (ang. fluent programming interface). Na wspomnianą tutaj płynność składają się dwa aspekty. Po pierwsze, wyrażenia, zamiast wywoływania pojedyńczych metod, składa się z potoku kolejnych wywołań metod, z których każda zwraca referencję do obiektu pozwalającego realizować dalsze przetwarzanie danych lub definiowanie kryteriów. Po drugie, na każdym etapie mamy do dyspozycji tylko niezbędne minimum metod, ściśle dostosowanych do charakteru obrabianych informacji. Dzięki temu znakomitą pomocą w pracy jest sam mechanizm podpowiadania składni środowiska programistycznego, a dokumentacja zewnętrzna przydaje się w skrajnych przypadkach.
+
+Assercje przy użyciu platformy JUnit:
+
+Assert.assertEquals(5,friednships.getFriendsList("Joe").size());
+List<String> friendsOfJoe = Arrays.asList("Audrey", "Peter");
+Assert.assertTrue(friendships.getFriendsList("Joe").containsAll(friendsOfJoe));
+Można połączyć przy pomocy AssertJ następująco:
+
+assertThat(friendships.getFriendsList("Joe").hasSize(5).containsOnly("Audrey","Peter")); 
+Więcej informacji na temat AssertJ znajdziemy pod adresem: http://joel-costigliola.github.io/assertj/
+
+
+
+Będziemy testować następującą klasę: 
+
+package matchersExample;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class SquareArray {
+
+    private List<Integer> list;
+
+    public List<Integer> getList() {
+        return list;
+    }
+
+    public void setList(List<Integer> list) {
+        this.list = list;
+    }
+
+    public void square_list(){
+        List<Integer> tempList = new ArrayList<Integer>();
+        for(Integer Number : list){
+            tempList.add(Number*Number);
+        }
+        setList(tempList);
+    }
+
+}
+Testy przy użyciu Hamcrest wyglądają następująco:
+
+package matchersExample;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.util.Arrays;
+import java.util.List;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
+
+public class SquareArrayHamcrestTest {
+
+    private SquareArray array;
+
+    @Before
+    public void setUp() throws Exception {
+        array = new SquareArray();
+    }
+
+    @Test
+    public void createInstance(){
+        assertThat(array.getClass(), is(SquareArray.class));
+    }
+
+    @Test
+    public void getArray(){
+        array.setList(Arrays.asList(1,2,3));
+        List <Integer> tempList = array.getList();
+        assertThat(tempList,contains(1,2,3));
+    }
+
+    @Test
+    public void getOneNumberOfArray(){
+        array.setList(Arrays.asList(1,2,3));
+        List <Integer> tempList = array.getList();
+        assertThat(tempList.get(0),is(1));
+    }
+
+    @Test
+    public void getContainsSquareList(){
+        array.setList(Arrays.asList(1,2,3));
+        array.square_list();
+        List <Integer> tempList = array.getList();
+        assertThat(tempList,containsInAnyOrder(1,9,4));
+    }
+
+    @Test
+    public void getSizeOfList(){
+        array.setList(Arrays.asList(1,2,3));
+        assertThat(array.getList(),hasSize(3));
+    }
+
+    @Test
+    public void combineMatchers(){
+        array.setList(Arrays.asList(1,2,3));
+        List <Integer> tempList = array.getList();
+        assertThat(tempList.get(0),allOf(lessThan(4), greaterThan(0)));
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        array = null;
+    }
+
+}
+Testy przy użyciu narzędzia AssertJ wyglądają następująco:
+
+package matchersExample;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.util.Arrays;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.*;
+
+public class SquareArrayAssertJTest {
+
+    private SquareArray array;
+
+    @Before
+    public void setUp() throws Exception {
+        array = new SquareArray();
+    }
+
+    @Test
+    public void createInstance(){
+        assertThat(array.getClass()).isEqualTo(SquareArray.class);
+    }
+
+    @Test
+    public void getArray(){
+        array.setList(Arrays.asList(1,2,3));
+        List<Integer> tempList = array.getList();
+        assertThat(tempList).contains(1,2,3);
+    }
+
+    @Test
+    public void getOneNumberOfArray(){
+        array.setList(Arrays.asList(1,2,3));
+        List <Integer> tempList = array.getList();
+        assertThat(tempList.get(0)).isEqualTo(1);
+    }
+
+    @Test
+    public void getContainsSquareList(){
+        array.setList(Arrays.asList(1,2,3));
+        array.square_list();
+        List <Integer> tempList = array.getList();
+        assertThat(tempList).containsExactlyInAnyOrder(1,9,4);
+    }
+
+    @Test
+    public void getSizeOfList(){
+        array.setList(Arrays.asList(1,2,3));
+        assertThat(array.getList()).hasSize(3);
+    }
+
+    @Test
+    public void combineMatchers(){
+        array.setList(Arrays.asList(1,2,3));
+        List <Integer> tempList = array.getList();
+        assertThat(tempList.get(0)).isBetween(0,4);
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        array = null;
+    }
+}
+Projekt napisany przy użyciu narzędzia Maven oraz InteliJ znajduje się pod adresem: https://stepik.org/media/attachments/lesson/207538/HamcrestAssertJExample.zip

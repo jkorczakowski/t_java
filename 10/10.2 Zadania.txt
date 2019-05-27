@@ -1,0 +1,42 @@
+Zadanie 1 (0.4 pkt)
+
+Korzystając z narzędzia Selenium WebDriver przetestuj dowolną wyszukiwarkę internetową. Rozpatrz różne przypadki i napisz testy, które odpowiadają na następujące pytania:
+
+Jak wejść w pierwszy i trzeci otrzymany wynik?
+Czy istnieje inna metoda na kliknięcie niż click()?
+Co w przypadku kiedy nie znajdziemy szukanego elementu, który wyszukujemy na stronie?
+Skorzystaj z minimum 4 sposobów znajdowania elementów (oprócz metody XPath).
+
+Jako odpowiedź prześlij printscreen z powodzenia testów oraz kod testów.
+
+
+
+Zadanie 2 (0.4 pkt)
+
+Korzystając z dowolnej strony internetowej i wykorzystując wyłącznie odnajdywanie elementów w narzędziu Selenium WebDriver przy pomocy narzędzia XPath, napisz testy, które będą odpowiadać na następujące pytania:
+
+Sprawdzi ilość dostępnych linków na stronie
+Sprawdzi ilość obrazów dostępnych na stronie
+Przejdzie do każdego linka i wróci spowrotem do sprawdzanej strony internetowej
+Przejdzie do dowolnego formularza i sprawdzi ilość jego pól testowych
+Skorzystaj ze skróconej wersji języka XPath!!!
+
+Jako odpowiedź prześlij printscreen z powodzenia testów oraz kod testów.
+
+
+
+Zadanie 3 (0.4 pkt)
+
+Korzystając z dowolnej strony internetowej i wykorzystując narzędzie Selenium WebDriver przetestuj logowanie się użytkownika na tej stronie. Oczywiście należy tutaj używać fikcyjnych kont służących wyłącznie do testowania danych. Strona ma być przetestowana przy użyciu przeglądarki Google Chrome!!!
+
+Rozpatrz różne przypadki!!!
+
+Jako odpowiedź prześlij printscreen z powodzenia testów oraz kod testów.
+
+
+
+Zadanie 4 (0.3 pkt)
+
+Zapoznaj się ze stroną http://automationpractice.com/index.php. Używając narzędzia Selenium WebDriver napisz co najmniej 3 proste testy wykorzystując powyższą stronę. Testy mają odpalać się na co najmniej dwóch przeglądarkach (jedna z nich ma być inna niż GoogleChrome czy MozillaFirefox).
+
+Jako odpowiedź prześlij printscreen z powodzenia testów oraz kod testów.

@@ -1,0 +1,268 @@
+Do zdobycia dzisiaj 1.5 pkt.
+
+Zadania można oddawać do końca dnia z uwagą taką, że:
+Osoby, które nie były na zajęciach oraz nie mające usprawiedliwienia otrzymują i tak zero punktów za zadania.
+Po pierwszym deadline, którym jest dzisiaj godzina 14.00 punkty będą maleć liniowo do końca dnia.
+
+
+
+Zadanie 1 (0.1 pkt)
+Napisz program, który wyświetli wiadomość: Witaj w świecie Java!!!
+Sample Input:
+
+Sample Output:
+
+Witaj w świecie Java!!!
+
+/*
+class T1 {
+    public static void main (String[] args) {
+        System.out.println("Witaj w świecie Java!!!");
+    }
+}
+*/
+
+
+Zadanie 2 (0.1 pkt)
+
+W dowolnym środowisku programistycznym zapisz i uruchom poprzedni program.
+
+Jako odpowiedź prześlij printscreen z poprawnego działania programu (w środowisku) oraz kod programu (w stepiku przy użyciu ikony {} można dodawać kod programu).
+
+/*
+public class T1 {    public static void main (String[] args) {        System.out.println("Witaj w świecie Java!!!");    }}
+*/
+
+
+Zadanie 3 (0.2 pkt)
+Liczba armstronga to taka liczba, która jest sumą potęg cyfr służących do jej zapisu.
+Liczba 9 jest liczbą armstronga, ponieważ 9=91
+Liczba 10 nie jest liczbą armstronga, ponieważ 10≠12+02=1.
+Napisz program, który będzie sprawdzał czy liczba n jest liczbą armstronga.
+Jako wyjścia program powinien wyświetlić wartość true, jeżeli liczba n jest liczbą armstronga lub false w przeciwnym przypadku.
+Sample Input:
+
+9
+Sample Output:
+
+true
+
+/*
+import java.util.Scanner;
+class T2_Armstrong {
+    public static void main (String[] args) {
+        Scanner input = new Scanner(System.in);
+        int number = input.nextInt();
+        int digits = String.valueOf(number).length();
+        int tmp = number;
+        int sum = 0;
+        int tmp_2;
+
+        while (tmp != 0)
+        {
+            tmp_2 = tmp % 10;
+            sum += Math.pow(tmp_2, digits);
+            tmp = tmp / 10;
+        }
+
+        if (number == sum) {
+            System.out.println("true");
+        }
+
+        else {
+            System.out.println("false");
+        }
+    }
+}
+*/
+
+
+Zadanie 4 (0.2 pkt)
+Pangramem nazywamy tekst, w którym każda litera alfabetu łacińskiego występuje przy najmniej raz.
+Najpopularniejszym pangramem w języku angielskim jest zdanie:
+The quick brown fox jumps over the lazy dog.
+Napisz program, który sprawdzi czy dany tekst jest pangramem.
+W przypadku pozytywnej odpowiedzi program powinien wyświetlić wartość true, w przeciwnym przypadku program powinien wyrzucić wartość false.
+Rozważ różne przypadki i wielkość liter (która nie powinna mieć znaczenia)!!!
+Sample Input:
+
+The quick brown fox jumps over the lazy dog
+Sample Output:
+
+true
+
+/*
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
+class T3_Pangram {
+
+    public static void main(String[] args) throws IOException {
+        BufferedReader bufferReader = new BufferedReader(new InputStreamReader(System.in));
+        String text = bufferReader.readLine();
+
+        for (char a = 'A'; a <= 'Z'; ++a) {
+            if ((text.indexOf(a) < 0) && (text.indexOf((char) (a + 32)) < 0)) {
+                System.out.println("false");
+                return;
+            }
+        }
+                System.out.println("true");
+    }
+}
+*/
+
+
+Zadanie 5 (0.3 pkt)
+Jeżeli podamy wiek w sekundach, to jest możliwość obliczenia ile osoba ta ma lat na ziemi.
+Kula ziemska przechodzi przez własną orbitę przez 365,25 dnia, które wynosi równo 31557600 sekund.
+A więc jeżeli osoba ma 1000000000 sekund to łatwo można policzyć, że 1000000000/31557600 = 31,69 lat (w przybliżeniu do drugiego miejsca po przecinku).
+Teraz rozpatrzmy metodę, która będzie przyjmowała wiek w sekundach oraz planetę którą chcemy obliczyć.
+Napisz program, który będzie zawierał tę metodę uwzględniając poniższe dane dotyczące innych planet:
+Obrót Merkurego podczas własnej orbity wynosi 0.2408467 lat ziemskich
+Obrót Wenus podczas własnej orbity wynosi 0.61519726 lat ziemskich
+Obrót Marsa podczas własnej orbity wynosi 1.8808158 lat ziemskich
+Obrót Jowisza podczas własnej orbity wynosi 11.862615 lat ziemskich
+Obrót Saturna podczas własnej orbity wynosi 29.447498 lat ziemskich
+Obrót Uranu podczas własnej orbity wynosi 84.016846 lat ziemskich
+Obrót Neptuna podczas własnej orbity wynosi 164.79132 lat ziemskich
+Sample Input 1:
+
+1000000000
+Ziemia
+Sample Output 1:
+
+31.69
+Sample Input 2:
+
+2134835688
+Merkury
+Sample Output 2:
+
+280.88
+
+/*
+import java.util.Scanner;
+class T4_Planet {
+    static final long earthYear = 31557600;
+    static long countSeconds (double year)
+    {
+        // 1 earth year = 31557600 secs
+        return (long) (year * earthYear);
+    }
+
+    public static void main (String[] args) {
+        Scanner input = new Scanner(System.in);
+        long seconds = input.nextLong();
+        String planet = input.next();
+
+        if (planet.equals("Ziemia")) {
+            System.out.println(String.format("%.2f", (double) seconds / earthYear));
+        }
+
+        else if (planet.equals("Merkury")) {
+            System.out.println(String.format("%.2f", (double) seconds / countSeconds (0.2408467)));
+        }
+
+        else if (planet.equals("Wenus")) {
+            System.out.println(String.format("%.2f", (double) seconds / countSeconds (0.61519726)));
+        }
+
+        else if (planet.equals("Mars")) {
+            System.out.println(String.format("%.2f", (double) seconds / countSeconds (1.8808158)));
+        }
+
+        else if (planet.equals("Jowisz")) {
+            System.out.println(String.format("%.2f", (double) seconds / countSeconds (11.862615)));
+        }
+
+        else if (planet.equals("Saturn")) {
+            System.out.println(String.format("%.2f", (double) seconds / countSeconds (29.447498)));
+        }
+
+        else if (planet.equals("Uran")) {
+            System.out.println(String.format("%.2f", (double) seconds / countSeconds (84.016846)));
+        }
+
+        else if (planet.equals("Neptun")) {
+            System.out.println(String.format("%.2f", (double) seconds / countSeconds (164.79132)));
+        }
+
+    }
+}
+*/
+
+
+Zadanie 6 (0.3 pkt)
+Napisz program, który będzie tworzył figury w następujący sposób:
+Pierwszy wiersz figury zawiera jedną literę A
+Ostatni wiersz figury zawiera jedną literę A
+Każdy wiersz oprócz pierwszej i ostatniej zawiera dokładnie dwie te same litery
+Każdy wiersz ma odpowiednią ścieżkę składająca się ze spacji
+Figura jest symetryczna poziomo i pionowo
+Figura przypomina podwójną piramidę
+Góra piramidy to litery w porządku malejącym
+Dół piramidy to litery w porządku rosnącym
+Jako argument funkcja pobiera literę od A-Z
+
+Sample Input 1:
+
+A
+Sample Output 1:
+
+A
+Sample Input 2:
+
+B
+Sample Output 2:
+
+ A 
+B B
+ A 
+Sample Input 3:
+
+C
+Sample Output 3:
+
+  A  
+ B B 
+C C C
+ B B 
+  A  
+Sample Input 4:
+
+D
+Sample Output 4:
+
+   A   
+  B B  
+ C C C 
+D D D D
+ C C C 
+  B B  
+   A   
+
+
+Zadanie 7 (0.1 pkt)
+W systemie nie ma zainstalowanego kompilatora do języka Java.
+Zainstaluj odpowiedni kompilator korzystając z dostępnych repozytoriów systemu Ubuntu (java w wersji 7).
+You have an unlimited number of attempts.
+Time limit: 60 mins
+
+
+Zadanie 8 (0.1 pkt)
+W pliku Test.java zapisz program w języku JAVA, który będzie wyświetlał w funkcji main komunikat: Witaj Java!!!
+Następnie przy użyciu kompilatora javac skompiluj ten program i uruchom go przy pomocy polecenia java.
+You have an unlimited number of attempts.
+Time limit: 60 mins
+
+
+Zadanie 9 (0.1 pkt)
+W pliku Test.java zapisz program w języku JAVA, który będzie wyświetlał w funkcji main komunikat: Witaj Java!!!
+Następnie przy użyciu kompilatora javac skompiluj ten program i zapisz go w formacie .jar (jako test.jar).
+Upewnij się że program zapisany w pliku .jar działa prawidłowo.
+Uwaga: Należy utworzyć plik manifest, w którym zapiszemy jaka klasa jest główną klasą programu. Bez tego plik test.jar nie uruchomi funkcji main.
+You have an unlimited number of attempts.
+Time limit: 60 mins
+

@@ -1,0 +1,156 @@
+Zadanie 1 (0.1 pkt)
+
+Zainstaluj narzędzie Maven w systemie.
+
+
+
+Zadanie 2 (0.1 pkt)
+
+Zainstaluj narzędzie Gradle w systemie.
+
+Użyj wersji 5.2 z repozytorium o nazwie cwchien (należy go dodać do repo).
+
+
+
+Zadanie 3 (0.1 pkt)
+
+Przy pomocy narzędzia MAVEN stwórz projekt o nazwie HelloMaven używając następującego szablonu: maven-archetype-quickstart.
+
+Projekt przed wysłaniem powinien być skompilowany.
+
+
+
+
+Zadanie 4 (0.1 pkt)
+
+W systemie jest projekt o nazwie FizzBuzz wraz z testami. 
+
+Zmodyfikuj plik pom.xml tak, aby uruchomiły się testy przy użyciu junit w wersji 4.12.
+
+
+
+Zadanie 5 (0.1 pkt)
+
+W systemie znajduje się projekt FizzBuzzMavenJUnit5, w którym znajdują się testy napisane przy użyciu JUnit5.
+
+Zmodyfikuj plik pom.xml tak, aby poprawnie w projekcie uruchomiły się testy.
+
+Wskazówka: Oprócz dodanie odpowiednich zależności należy również dodać odpowiedni plugin. Więcej informacji poszukaj o tym w internecie.
+
+
+
+Zadanie 6 (0.1 pkt)
+
+W systemie znajduje się projekt o nazwie HelloMaven.
+
+Spakuj projekt do pliku o nazwie HelloMaven-1.0-SNAPSHOT.jar, a następnie odpal metodę main tego projektu zapisując jego wynik w pliku result.txt (w katalogu domowym użytkownika).
+
+
+
+Zadanie 7 (0.1 pkt)
+
+Przy pomocy narzędzia Gradle utwórz projekt o nazwie HelloGradle.
+
+
+
+Zadanie 8 (0.1 pkt)
+
+W systemie znajdują się pliki FizzBuzz.java oraz FizzBuzzTest.java napisane za pomocą JUnit5.
+
+Przy użyciu narzędzia Gradle utwórz projekt FizzBuzz, w którym zamieścisz odpowiednio pliki FizzBuzz.java oraz FizzBuzzTest.java, a następnie uruchomisz testy przy użyciu komendy gradle.
+
+
+
+Zadanie 9 (0.1 pkt)
+
+W systemie znajduje się projekt o nazwie FizzBuzzMaven.
+
+Przy pomocy narzędzia Maven zainstaluj plugin JaCoCo, który pozwala na wygenerowanie raportów dotyczące pokrycia kodu dla danego projektu. Wygeneruj raport dla projektu FizzBuzzMaven
+
+
+
+Zadanie 10 (0.1 pkt)
+
+W systemie znajduje się projekt FizzBuzzGradle w systemie Gradle.
+
+Przy pomocy narzędzia Gradle zainstaluj plugin JaCoCo, który pozwala na wygenerowanie raportów dotyczące pokrycia kodu dla danego projektu. 
+
+
+
+Zadanie 11 (0.5 pkt)
+
+Rozważmy następującą klasę, która realizuje przeszukiwanie binarne (BinarySearch).
+
+public class BinSearch {
+	 public static int binarySearch(int[] nums, int check) {
+	        int highest = nums.length - 1;
+	        int lower = 0;
+	        while (hi >= lo) {
+	            int guess = lo + ((lo - hi) / 2);
+	            if (nums[guess - 1] > check) {
+	                highest = guess - 1;
+	            } else if (nums[guess] < check + 1) {
+	                lower = guess + 1;
+	            } else {
+	                return guess;
+	            }
+	        }
+	        return true;
+	    }
+}
+Przy pomocy narzędzia Maven oraz JUnit5 przetestuj powyższą klasę. Jeżeli zawiera ona błędy to popraw ją.
+
+Jako odpowiedź prześlij printscreen z przechodzenia testów (poprzez narzędzie Maven), kod testów oraz ewentualnie poprawiony kod programu z zaznaczonymi błędami.
+
+Na dodatkowe 0.5 pkt przerób przeszukiwanie na typ generyczny dla wszystkich podstawowych typów porównywalnych. Przetestuj również ten zmodyfikowany program.
+
+
+
+Zadanie 12 (0.5 pkt)
+
+Rozważmy następującą klasę, realizujące jakieś operacje na napisach.
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class StringOperations {
+	
+  public String reverse(String a) {
+	  List<String> tempArray = new ArrayList<String> (a.length());
+	  for (int i=0; i< a.length(); i++) {
+		  tempArray.add(a.substring(i, i+1));
+	  }
+	  StringBuilder reversedString = new StringBuilder(a.length());
+	  for (int i = tempArray.size()-1; i>=0; i--) {
+		  reversedString.append(tempArray.get(i));
+	  }
+	  return reversedString.toString();
+  }
+  
+  public String concat(String a, String b) {
+	  String retVal = null;
+	    if (a != null && a.length() > 0) {
+	      StringBuilder sb = new StringBuilder();
+	      sb.append(a);
+	        if (b != null) {
+	          sb.append(b);
+	        }
+	      retVal = sb.toString();
+	    }
+	    return retVal;
+  }
+  
+  public boolean isPalindrome(String a) {
+	  if(a.length()<=1){
+			return true;
+		}
+		if(!(a.charAt(1)+"").equals(a.charAt(a.length()-1)+"")){
+			return false;
+		}
+		return isPalindrome(a.substring(1, a.length()-2));
+  }
+  
+}
+Przy pomocy narzędzia Maven oraz JUnit5 przetestuj powyższą klasę. Jeżeli zawiera ona błędy to popraw ją.
+
+Jako odpowiedź prześlij printscreen z przechodzenia testów (poprzez narzędzie Maven), kod testów oraz ewentualnie poprawiony kod programu z zaznaczonymi błędami oraz pokrycie kodu (z raportu JaCoCo) tej klasy.

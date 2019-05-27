@@ -1,0 +1,252 @@
+Rozważmy następującą implementację klasy Person:
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class Person {
+  
+  private String name;
+  private List<String> friends;
+  
+  public Person() { }
+  
+	  public Person(String name){
+		  this.setName(name);
+		  setFriends(new ArrayList<String>());
+	  }
+	
+	  public List<String> getFriends() {
+		return friends;
+	  }
+	
+	  public void setFriends(List<String> friends) {
+		this.friends = friends;
+	  }
+	
+	  public void addFriend(String name){
+		  if(!friends.contains(name)){
+			  friends.add(name);
+		  }
+	  }
+
+	public String getName() {
+		return name;
+	}
+	
+	public void setName(String name) {
+		this.name = name;
+	}
+  
+}
+Przypuśćmy, że mamy mieć bazę danych w systemie MongoDB, która będzie składować informację o osobach oraz ich przyjaciołach:
+
+package MockExamples.MockExamples;
+
+import java.rmi.UnknownHostException;
+import java.util.Collections;
+import java.util.List;
+
+public class FriendshipsMongo {
+  private FriendsCollection friends;
+  
+  public FriendshipsMongo(){
+	  try {
+		friends = new FriendsCollection();
+	  } catch (UnknownHostException e) {
+		e.printStackTrace();
+	}
+  }
+  
+  public List<String> getFriendsList(String person){
+	  Person p = friends.findByName(person);
+	  if (p == null){
+		  return Collections.emptyList();
+	  }
+	  return p.getFriends();
+  }
+  
+  public void makeFriends(String person1, String person2){
+	  addFriend(person1,person2);
+	  addFriend(person2,person1);
+  }
+  
+  public boolean areFriends(String person1, String person2){
+	  Person p = friends.findByName(person1);
+	  return p != null && p.getFriends().contains(person2);
+  }
+  
+  public void addFriend(String person, String friend){
+	  Person p = friends.findByName(person);
+	  if (p == null){
+		  p = new Person(person);
+	  }
+	  p.addFriend(friend);
+	  friends.save(p);
+  }
+ 
+  
+}
+Powyższa klasa bazuje na klasie FriendsCollection, która jest implementacją bazy danych:
+
+package MockExamples.MockExamples;
+
+import java.rmi.UnknownHostException;
+
+import org.jongo.Jongo;
+import org.jongo.MongoCollection;
+
+import com.mongodb.DB;
+import com.mongodb.MongoClient;
+
+public class FriendsCollection {
+  
+  private MongoCollection friends;
+  
+  public FriendsCollection() throws UnknownHostException{
+    @SuppressWarnings({ "deprecation", "resource" })
+	DB db = new MongoClient().getDB("friendships");
+	friends = new Jongo(db).getCollection("friends");
+  }
+  
+  public Person findByName(String name){
+	  return friends.findOne("{_id: #", name).as(Person.class);
+  }
+  
+  public void save(Person p){
+	  friends.save(p);
+  }
+  
+}
+
+
+
+Przetestujmy klasę FriendshipsMongo przy użyciu narzędzia Mockito:
+
+package MockExamples.MockExamples;
+
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doReturn;
+
+import java.util.Arrays;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+@ExtendWith(MockitoExtension.class)
+public class FriendshipsMongoMockitoTest {
+	
+	//Co zastepujemy
+	@Mock
+	FriendsCollection friends;
+	
+	//Nasza atrapa
+	@InjectMocks
+	FriendshipsMongo friendships;
+	
+	@Test
+	public void mockingWorskAsExpected(){
+		Person joe = new Person("Joe");
+		doReturn(joe).when(friends).findByName("Joe");
+		assertThat(friends.findByName("Joe")).isEqualTo(joe);
+	}
+	
+	@Test
+	public void alexDoesNotHaveFriends(){
+		assertThat(friendships.getFriendsList("Alex")).isEmpty();
+	}
+	
+	@Test
+	public void joeHas5Friends(){
+		List<String> expected = Arrays.asList(new String[]{"Karol","Dawid","Maciej","Tomek","Adam"});
+		//Spy przechwytuje wywołania z przekazywanymi pośrednio danymi w celu
+		// późniejszego zbadania tych danych w teście - tutaj w przykładzie lista przyjaciół Joe
+		Person joe = spy(new Person("Joe"));
+		doReturn(joe).when(friends).findByName("Joe");
+		doReturn(expected).when(joe).getFriends();
+		assertThat(friendships.getFriendsList("Joe")).hasSize(5).containsOnly("Karol","Dawid","Maciej","Tomek","Adam");
+	}
+
+
+}
+
+
+
+Przetestujmy klasę FriendshipsMongo przy użyciu narzędzia EasyMock:
+
+package MockExamples.MockExamples;
+
+import org.easymock.EasyMockRunner;
+import org.easymock.Mock;
+import org.easymock.MockType;
+import org.easymock.TestSubject;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.runner.RunWith;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.easymock.EasyMock.*;
+
+import java.util.Arrays;
+import java.util.List;
+
+@ExtendWith(EasyMockExtension.class)
+public class FriendshipsMongoEasyMockTest {
+
+	@TestSubject
+	FriendshipsMongo friendships = new FriendshipsMongo();
+
+	//A nice mock expects recorded calls in any order and returning null for other calls
+	@Mock(type = MockType.NICE)
+	FriendsCollection friends;
+	
+	@Test
+	public void mockingWorksAsExpected(){
+		Person joe = new Person("Joe");
+		//Zapisanie zachowania - co sie ma stac
+		expect(friends.findByName("Joe")).andReturn(joe);
+		//Odpalenie obiektu do sprawdzenia zachowania
+		replay(friends);
+		assertThat(friends.findByName("Joe")).isEqualTo(joe);
+	}
+	
+	@Test
+	public void alexDoesNotHaveFriends(){
+		assertThat(friendships.getFriendsList("Alex")).isEmpty();
+	}
+	
+	@Test
+	public void joeHas5Friends(){
+		List<String> expected = Arrays.asList(new String[]{"Karol","Dawid","Maciej","Tomek","Adam"});
+		Person joe = createMock(Person.class);
+		expect(friends.findByName("Joe")).andReturn(joe);
+		expect(joe.getFriends()).andReturn(expected);
+		replay(friends);
+		replay(joe);
+		assertThat(friendships.getFriendsList("Joe")).hasSize(5).containsOnly("Karol","Dawid","Maciej","Tomek","Adam");
+	}
+	
+}
+W tym przypadku nie ma wbudowanego rozszerzenia EasyMockExtension, dlatego stworzymy go sami:
+
+package MockExamples.MockExamples;
+
+import org.easymock.EasyMockSupport;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.api.extension.TestInstancePostProcessor;
+
+public class EasyMockExtension implements TestInstancePostProcessor {
+
+    @Override
+    public void postProcessTestInstance(Object testInstance, ExtensionContext context) throws Exception {
+        EasyMockSupport.injectMocks(testInstance);
+    }
+}
+Oczywiście można to ominąć, ale trzeba pamiętać o zainicjalizowaniu atrap w projekcie.
+
+Projekt z użyciem EasyMock oraz Mockito znajduje się pod adresem:https://stepik.org/media/attachments/lesson/207547/AtrapyPrzyklad.zip

@@ -1,0 +1,249 @@
+Utworzenie łatwego do utrzymania kodu automatyzacji to jeden z kluczy do udanego projektu automatyzacji testów. Kod automatyzacji testów powinien być traktowany jako kod produkcyjny, a podczas jego rozwijania muszą być stosowane standardy i wzorce właściwe dla wytwarzania oprogramowania.
+
+Podczas tworzenia testów Selenium WebDriver można używać wzorca PageObject. Stosowanie go pomaga usprawnić testy: poprawia łatwość ich utrzymania, minimalizuje powielanie kodu, buduje warstwę abstrakcji i ukrywa wewnętrzne szczegóły implementancji.
+
+Dzięki stosowaniu zasad programowania obiektowego można tworzyć klasy, które spełniają rolę interfejsu strony WWW w aplikacji oraz modelują jej właściwości i zachowanie. To pomaga w tworzeniu warstwy separacji pomiędzy kodem testu, a kodem specyficznym dla strony, ponieważ ukrywamy tutaj implementacje techniczne. 
+
+Wzorzec projektowy PageObject zapewnia interfejs, z pomocą którego test może operować na stronie w sposób przypominający użytkownika korzystającego ze strony, ukrywając jednocześnie jego mechanizmy wewnętrzne. Przykładem stosowania wzorca PageObject jest panel logowania czy wyszukiwanie elementu na stronie WWW.
+
+Wzorzec PageObject można stosować następująco:
+
+Ręcznie
+Przy użyciu metody PageFactory, gdzie elementy strony są po prostu ich nazwami
+Przy użyciu metody PageFactory, gdzie elementy strony są poprzedzone słowem kluczowym @FindBy
+Korzystając z klasy LoadableComponent
+
+
+
+Rozważmy następujące klasy reprezentujące model PageObject strony google:
+
+package WebPages;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.Wait;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+public class PageObjectGoogle {
+	
+	public WebDriver driver;
+	private final Wait<WebDriver> wait;
+
+	public PageObjectGoogle(WebDriver driver){
+		this.driver = driver;
+		driver.get("http://www.google.co.in");
+		wait = new WebDriverWait(driver,10);
+	}
+	
+	public void search() throws Exception{
+		wait.until(ExpectedConditions.presenceOfElementLocated(By.name("q")));
+		driver.findElement(By.name("q")).sendKeys("Mateusz Miotk");
+		driver.findElement(By.name("q")).submit();
+		wait.until(ExpectedConditions.titleContains("Mateusz Miotk"));
+	}
+	
+	public boolean assertTitle() throws Exception{
+		Boolean result = driver.getTitle().contains("Mateusz Miotk");
+		System.out.println(driver.getTitle());
+		return(result);
+	}
+	
+}
+Powyższa metoda jest ręczną implementacją modelu PageObject. Testy do powyższej klasy mogą wyglądać następująco:
+
+package pageObjectDemo;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+import WebPages.PageObjectGoogle;
+import io.github.bonigarcia.wdm.WebDriverManager;
+import WebPages.PageFactoryGoogle;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.chrome.ChromeDriver;
+
+public class PageObjectGoogleTest {
+
+	private static WebDriver driver;
+	private PageObjectGoogle googlePage;
+
+	@BeforeAll
+	public static void setUpBeforeClass() throws Exception {
+		WebDriverManager.chromedriver().setup();
+		driver = new ChromeDriver();
+	}
+
+	@Test
+	public void searchGoogle() throws Exception {
+		googlePage = new PageObjectGoogle(driver);
+		googlePage.search();
+		assertTrue(googlePage.assertTitle());
+	}
+
+	@AfterAll
+	public static void tearDownAfterClass() throws Exception {
+		driver.quit();
+	}
+
+
+
+}
+
+
+
+Teraz rozważmy następującą klasę reprezentującą stronę google:
+
+package WebPages;
+
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+
+public class PageFactoryGoogle {
+  
+  //Nie uzywamy FindByElement !!!
+	
+  private WebElement q;
+  public WebDriver driver;
+  
+  public PageFactoryGoogle(WebDriver driver){
+	  this.driver = driver;
+	  driver.get("http://www.google.com/");
+  }
+  
+  public void search(String text) throws Exception{
+	  q.sendKeys(text);
+	  q.submit();
+	  Thread.sleep(1000);
+  }
+  
+  public boolean assertTitle() throws Exception{
+		Boolean result = driver.getTitle().contains("Mateusz Miotk");
+		System.out.println(driver.getTitle());
+		return(result);
+  }
+  
+  
+}
+Tutaj elementy strony WWW będą odszukiwane po nazwie zmiennych. Test do powyższej klasy może wyglądać następująco:
+
+package pageObjectDemo;
+
+import static org.junit.jupiter.api.Assertions.*;
+import io.github.bonigarcia.wdm.WebDriverManager;
+import WebPages.PageFactoryGoogle;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.chrome.ChromeDriver;
+
+public class PageFactoryGoogleTest {
+
+    private static WebDriver driver;
+		
+	@BeforeAll
+	public static void setUpBeforeClass() throws Exception {
+		WebDriverManager.chromedriver().setup();
+		driver = new ChromeDriver();
+	}
+	
+	@Test
+	public void test() throws Exception {
+		PageFactoryGoogle googlePage = PageFactory.initElements(driver, PageFactoryGoogle.class);
+		googlePage.search("Mateusz Miotk");
+		assertTrue(googlePage.assertTitle());
+	}
+
+	@AfterAll
+	public static void tearDownAfterClass() throws Exception {
+		driver.quit();
+	}
+
+
+
+}
+Należy pamiętać o użyciu metody PageFactory.initElements. Bez niej elementy nie zostaną znalezione!!!
+
+
+
+Teraz rozważmy klasy, która korzystać będzie z modelu PageObject oraz adnotacji @FindBy:
+
+package WebPages;
+
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
+
+public class PageObjectFindByGoogle {
+   
+	public WebDriver driver;
+   
+	@FindBy(id = "lst-ib")
+	private WebElement submitMe;
+	
+	@FindBy(name = "q")
+	private WebElement searchMe;
+	
+	public PageObjectFindByGoogle(WebDriver driver){
+		this.driver = driver;
+		driver.get("http://www.google.com/");
+	}
+	
+	public void search(String text) throws Exception{
+		searchMe.sendKeys(text);
+		submitMe.submit();
+		Thread.sleep(1000);
+	}
+	
+	public boolean assertTitle() throws Exception{
+		Boolean result = driver.getTitle().contains("Mateusz Miotk");
+		System.out.println(driver.getTitle());
+		return(result);
+	}
+	
+}
+Tutaj możemy identyfikować elementy z różnymi kryteriami (tak jak w przypadku wyszukiwania elementów). Test do powyższej klasy może wyglądać następująco:
+
+package pageObjectDemo;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+import WebPages.PageFactoryGoogle;
+import org.junit.jupiter.api.*;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.support.PageFactory;
+import org.junit.jupiter.api.extension.ExtendWith;
+import io.github.bonigarcia.seljup.SeleniumExtension;
+import org.openqa.selenium.chrome.ChromeDriver;
+
+
+@ExtendWith(SeleniumExtension.class)
+public class PageObjectFindByGoogleTest {
+
+    private static WebDriver driver;
+
+	public PageObjectFindByGoogleTest(ChromeDriver driver) {
+		this.driver = driver;
+	}
+	
+	@Test
+	public void test() throws Exception {
+		PageFactoryGoogle googlePage = PageFactory.initElements(driver, PageFactoryGoogle.class);
+		googlePage.search("Mateusz Miotk");
+		assertTrue(googlePage.assertTitle());
+	}
+
+	@AfterAll
+	public static void tearDownAfterClass() throws Exception {
+		driver.quit();
+	}
+
+}
+Zaleca się aby obiekty reprezentujące strony WWW nie znajdowały się razem w testach tylko w modelach (najlepiej stworzyć do tego oddzielny katalog/paczkę.
+
+Całość projektu jest dostępny pod adresem: https://stepik.org/media/attachments/lesson/207554/PageObjectModelExample.zip

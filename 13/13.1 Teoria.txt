@@ -1,0 +1,270 @@
+Dotychczas wszystkie poznane techniki stosowano głównie do programistów. Pomijano tutaj klientów, analityków i innych członków
+zespołu, którzy w głównej mierze nie potrafią zrozumieć kodu. Ponadto pisana dotychczas dokumnetacja w głównej mierze służy programistom a nie innym członkom zespołu. Dlatego wprowadza się pojęcie programowania sterowanego zachowaniami - BDD (Behaviour Driven Development).
+
+BDD to proces zwinny, zaprojektowany po to, by w trakcie całego projektu zachować koncentrację na generowaniu wartości dla interscenariuszy. BDD jest odmianą TDD. Najpierw definiuje się specyfikacje, a potem na ich podstawie pisze się kod rozwiązania. W odróżnieniu od TDD, gdzie używane są testy jednostkowe, w BDD przed rozpoczęciem pisania kodu tworzone są liczne specyfikacje (nazywane scenariuszami). W BDD zwykle tworzone są wymagania funkcjonalne z wyższego poziomu. Kolejną różnicą
+są odbiorcy. BDD ma umożliwiać udział w pracach wszystkim (programistom, testerom, menadżerom, użytkownikom, klientom itd.).
+BDD funkcjonuje od “zewnątrz do wewnątrz” (najpierw opisywane są funkcje, a potem zespół tworzy jednostki).
+
+Scenariusze należy zacząć od zdefiniowania funkcji, zachowań, opracować je, stosując TDD razem z testami jednostkowymi, a po ukończeniu prac należy sprawdzić poprawność rozwiązania za pomocą BDD. Zakończenie jednego scenariusza BDD może zająć kilka godzin, a nawet kilka dni.
+
+
+
+Historia w BDD składa się z jednej narracji powiązanej z przynajmniej jednym scenariuszem. Narracja pełni funkcję czysto informacyjną, a jej głównym zadaniem jest zapewnienie danych umożliwiających komunikację między wszystkimi zainteresowanymi stronami. Narracja to krótki opis funkcji przedstawiony z perspektywy osoby, która tej funkcji potrzebuje. 
+
+Aby napisać narracje należy odpowiedzieć na trzy podstawowe pytania:
+
+Jaką wartość ma dawać funkcja, którą należy zbudować?
+Kto potrzebuje żądanej funkcji?
+Czym jest funkcja, którą należy opracować lub jaki jest cel prac?
+Przykład narracji:
+
+In order to: Aby wydajne było wyszukiwanie przyjaciół
+As a: Jako administrator forum
+I want to: Chce móc posortować leksykograficznie przyjaciół
+
+
+
+Kiedy narracja ma umożliwiać komunikację, to scenariusze mają być efektem tej komunikacji. Powinny opisywać interakcje osoby pełniącej daną funkcję (wskazanej w punkcie Jako) z systemem. Inaczej niż testy jednostkowe, pisane w formie kodu przez programistów dla programistów, scenariusze w BDD należy definiować za pomocą zwykłego języka i podawać w nich minimalną ilość szczegółów technicznych, tak by wszystkie osoby zaangażowane w projekt miały wspólny opis zachowań (funkcji), które zostaną dodane do systemu.
+
+Każdy scenariusz składa się z opisu oraz jednego bądź większej liczby kroków rozpoczynających się od słów (zakładając, że; jeśli; to). Opis jest krótki i pełni funkcję informacyjną. Pomaga szybko zrozumieć czego scenariusz dotyczy. Natomiast kroki to sekwencja warunków wstępnych, zdarzeń i oczekiwanych skutków przebiegu scenariusza. Kroki pomagają jednoznacznie zdefiniować zachowanie i można je łatwo przekształcić w automatyczne testy.
+
+Przykład narracji oraz scenariusza:
+
+Narrative:
+In order to: Aby wydajnie zarządzać ofertą księgarni
+As a: Jako administrator sklepu
+I want to: Chcę móc dodawać, aktualizować i usuwać książki
+Scenario: Użytkownik powinien móc wyświetlić informacje
+o książce
+Given: Zakładając, że użytkownik znajduje się na stronie
+z książkami
+When: Jeśli użytkownik wybierze książkę
+Then: To formularz będzie zawierał wszystkie dane
+Krok “zakładając, że” (Given) definiuje kontekst lub warunki wstępne, które muszą być spełnione, by dalsza część scenariusza mogła zakończyć się sukcesem. Krok “jeśli” (When) definiuje działania lub zdarzenia. Krok (Then) określa zakończenie scenariusza. Każdy scenariusz powinien kończyć się tą klauzulą.
+
+
+
+JBehave (http://jbehave.org/) to platforma do stosowania BDD dla aplikacji napisanych w Javie. JBehave służy do pisania testów
+akceptacyjnych, które można wykonywać i zautomatyzować. Kroki z historii są związane z kodem w Javie za pomocą zestawu udostępnianych przez platformę adnotacji.
+Integracja JBehave z IDE:
+
+Eclipse (http://jbehave.org/eclipse-integration.html)
+IntelliJ (https://plugins.jetbrains.com/category/23-jbehave/idea)
+NetBeans (http://plugins.netbeans.org/plugin/50532/jbehave-navigator-plugin)
+Tworzenie aplikacji JBehave w Maven (kompilacja: mvn verify) mvn archetype:generate -Dfilter=org.jbehave:jbehave (opcja
+5)
+
+
+
+Będziemy pisać scenariusze do następującej klasy kalkulator:
+
+package JBehaveExample.ExampleJBehave;
+
+public class Calculator {
+	
+	private int left,right;
+
+	public int add(int a, int b){
+		return a+b;
+	}
+	
+	public int substract(int a, int b){
+		return a-b;
+	}
+	
+	public int multiply(int a, int b){
+		return a*b;
+	}
+
+	public int getLeft() {
+		return left;
+	}
+
+	public void setLeft(int left) {
+		this.left = left;
+	}
+
+	public int getRight() {
+		return right;
+	}
+
+	public void setRight(int right) {
+		this.right = right;
+	}
+}
+Scenariusz przykładowy może wyglądać do tej klasy następująco (plik calculator_test_runner.story):
+
+Sample story
+
+Narrative:
+In order to aby pokazać przykład użycia BDD
+As a prowadzący zajęcia
+I want to użyje BDD do kalkulatora
+					 
+Scenario:  Test dodawania liczb2
+Given Mam utworzony nowy kalkulator
+When dodam liczby -3 i 3
+Then po dodaniu dostane 0
+
+
+
+Aby odpalić scenariusz (przy pomocy polecenie mvn integration-test) należy wykonać dwa kroki:
+
+1. Utworzyć plik konfiguracyjny (plik CalculatorRunnerStories.java):
+
+package JBehaveExample.ExampleJBehave;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import org.jbehave.core.configuration.Configuration;
+import org.jbehave.core.configuration.MostUsefulConfiguration;
+import org.jbehave.core.io.CodeLocations;
+import org.jbehave.core.io.LoadFromURL;
+import org.jbehave.core.io.StoryFinder;
+import org.jbehave.core.junit.JUnitStories;
+import org.jbehave.core.reporters.FilePrintStreamFactory;
+import org.jbehave.core.reporters.Format;
+import org.jbehave.core.reporters.StoryReporterBuilder;
+import org.jbehave.core.steps.InjectableStepsFactory;
+import org.jbehave.core.steps.InstanceStepsFactory;
+
+
+public class CalculatorRunnerStories extends JUnitStories {
+
+	@Override
+	public Configuration configuration(){
+		return new MostUsefulConfiguration().useStoryReporterBuilder(getReporter()).
+				useStoryLoader(new LoadFromURL());
+	}
+	
+	@Override
+	protected List<String> storyPaths() {
+		String path = "stories/**/*.story";
+		return new StoryFinder().findPaths(CodeLocations.codeLocationFromPath("").getFile(),
+				Collections.singletonList(path),
+				new ArrayList<String>(), "file:");
+	}
+
+	@Override 
+	public InjectableStepsFactory stepsFactory(){
+		return new InstanceStepsFactory(configuration(), new CalculatorStepsRunner2());
+	}
+	
+	private StoryReporterBuilder getReporter(){
+		return new StoryReporterBuilder().withPathResolver(new FilePrintStreamFactory.ResolveToSimpleName()
+				).withDefaultFormats().withFormats(Format.CONSOLE, Format.HTML);
+	}
+	
+}
+2. Utworzyć steps (plik CalculatorStepsRunner2):
+
+package JBehaveExample.ExampleJBehave;
+
+import org.jbehave.core.annotations.*;
+import static org.junit.Assert.*;
+public class CalculatorStepsRunner2{
+	
+	private Calculator test;
+	
+	@Given("Mam utworzony nowy kalkulator")
+	public void givenMamUtworzonyNowyKalkulator(){
+		test = new Calculator();
+	}
+	@Then("po dodaniu dostane 0")
+	public void thenPoDodaniuDostane0(){
+		 assertEquals(0,test.add(test.getLeft(), test.getRight()));
+	}
+	@When("dodam liczby -3 i 3")
+	public void whenDodamLiczby3I3(){
+		 test.setLeft(-3);
+		 test.setRight(3);
+	}
+}
+W tym przypadku wszystkie scenariusze są odpalane w katalogu stories.
+
+
+
+W domyślnym schemacie (utworzonym poprzez polecenie mvn generate) konfiguracja JBehave wygląda następująco:
+
+import java.text.SimpleDateFormat;
+import java.util.List;
+import org.jbehave.core.Embeddable;
+import org.jbehave.core.configuration.Configuration;
+import org.jbehave.core.configuration.MostUsefulConfiguration;
+import org.jbehave.core.embedder.EmbedderControls;
+import org.jbehave.core.i18n.LocalizedKeywords;
+import org.jbehave.core.io.CodeLocations;
+import org.jbehave.core.io.LoadFromClasspath;
+import org.jbehave.core.io.StoryFinder;
+import org.jbehave.core.junit.JUnitStories;
+import org.jbehave.core.model.ExamplesTableFactory;
+import org.jbehave.core.model.TableTransformers;
+import org.jbehave.core.parsers.RegexStoryParser;
+import org.jbehave.core.reporters.StoryReporterBuilder;
+import org.jbehave.core.steps.InjectableStepsFactory;
+import org.jbehave.core.steps.InstanceStepsFactory;
+import org.jbehave.core.steps.ParameterConverters;
+import org.jbehave.core.steps.ParameterConverters.DateConverter;
+import org.jbehave.core.steps.ParameterConverters.ExamplesTableConverter;
+import testJBehave.steps.MySteps;
+
+import static org.jbehave.core.io.CodeLocations.codeLocationFromClass;
+import static org.jbehave.core.reporters.Format.CONSOLE;
+import static org.jbehave.core.reporters.Format.HTML;
+import static org.jbehave.core.reporters.Format.TXT;
+import static org.jbehave.core.reporters.Format.XML;
+
+/**
+ * <p>
+ * {@link Embeddable} class to run multiple textual stories via JUnit.
+ * </p>
+ * <p>
+ * Stories are specified in classpath and correspondingly the {@link LoadFromClasspath} story loader is configured.
+ * </p> 
+ */
+public class MyStories extends JUnitStories {
+    
+    public MyStories() {
+        EmbedderControls useStoryTimeoutInSecs = configuredEmbedder().embedderControls().doGenerateViewAfterStories(true).doIgnoreFailureInStories(true)
+                .doIgnoreFailureInView(true).useThreads(2).useStoryTimeoutInSecs(60);
+    }
+
+    @Override
+    public Configuration configuration() {
+    	 Class<? extends Embeddable> embeddableClass = this.getClass();
+         // Start from default ParameterConverters instance
+         ParameterConverters parameterConverters = new ParameterConverters();
+         // factory to allow parameter conversion and loading from external resources (used by StoryParser too)
+         ExamplesTableFactory examplesTableFactory = new ExamplesTableFactory(new LocalizedKeywords(), new LoadFromClasspath(embeddableClass), parameterConverters, null, new TableTransformers());
+        // add custom converters
+        parameterConverters.addConverters(new DateConverter(new SimpleDateFormat("yyyy-MM-dd")),
+                new ExamplesTableConverter(examplesTableFactory));
+        return new MostUsefulConfiguration()
+            .useStoryLoader(new LoadFromClasspath(embeddableClass))
+            .useStoryParser(new RegexStoryParser(examplesTableFactory)) 
+            .useStoryReporterBuilder(new StoryReporterBuilder()
+                .withCodeLocation(CodeLocations.codeLocationFromClass(embeddableClass))
+                .withDefaultFormats()
+                .withFormats(CONSOLE, TXT, HTML, XML))
+            .useParameterConverters(parameterConverters);
+    }
+
+    @Override
+    public InjectableStepsFactory stepsFactory() {
+        return new InstanceStepsFactory(configuration(), new MySteps());
+    }
+
+    @Override
+    protected List<String> storyPaths() {
+          return new StoryFinder().findPaths(codeLocationFromClass(this.getClass()), "**/*.story", "**/excluded*.story");
+                
+    }
+        
+}
+Tutaj ważną metodą jest storyPaths(), która odpowiada za znajdowanie scenariuszy. Domyślnie szuka on scenariuszy po nazwach klas (w tym przypadku szuka scenariusza o nazwie my.story).
+
+Uwaga: Ważne jest, aby w pliku pom.xml były dobrze ustawione katalogi źródłowe (resources). Bez tego może on nie znajdować scenariuszy po klasach!!!
+
+Cały projekt do ściągnięcia pod adresem: https://stepik.org/media/attachments/lesson/207558/JBehaveExample.zip

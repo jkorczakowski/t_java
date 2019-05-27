@@ -1,0 +1,145 @@
+Zadaniem testów jednostkowych jest sprawdzenie działania pojedyńczej metody. A co w przypadku kiedy działanie tej metody jest uzależnione od czynników zewnętrznych np.: funkcjonowanie bazy danych czy silnika serwletów?
+Wówczas testy muszą inicjować prawie wszystkie kompomenty systemu zewnętrznego, a jest to wyjątkowo pracochłonne i ponadto wprowadzi do testów zbyt wysoki stopień powiązania z systemem: wystarczy, że zmiana np.: tabeli w bazie danych spowoduje, że przetestowany kod przestanie działać.
+Aby uniknąć tych zagrożeń wymyślono tzw. obiekty imitacji.
+
+Obiekt imitacji (lub inaczej atrapa) to obiekt symulujący określone zachowania, którym można zastąpić rzeczywiste obiekty. Atrapy są bardzo przydatne, gdy obiekty zależne od zewnętrznych zasobów nie mogą uzyskać dostępu do tych zasobów.
+Ponadto są przydatne w wielu innych sytuacjach m.in:
+
+Obiekt rzeczywisty zachowuje się niedeterministycznie
+Obiekt rzeczywisty jest trudny do skonfigurowania
+Trudne jest wywołanie odpowiedniego zachowania obiektu
+Działanie rzeczywistego obiektu jest powolne
+Test musi uzyskać informacje o sposobie użycia rzeczywistego obiektu
+Obiekt rzeczywisty jeszcze nie istnieje
+Są znane ogólnie trzy metody tworzenia obiektów imitacji:
+
+Ręcznie
+Przy pomocy narzędzia Mockito
+Przy pomocy narzędzia EasyMock
+Nigdy nie testujemy imitacji. One mają nam umożliwić testowanie innych składników aplikacji w czasie normalnego działania programu.
+Testowanie ich jest pozbawione sensu, bo poddajemy testom kod, który nie będzie uruchamiany w czasie pracy.
+Działanie klasy imitacji musi być identyczne z działaniem imitowanej klasy. W przeciwnym przypadku klasa imitacji nie będzie
+odzwierciedlały prawdziwego jego działania.
+
+
+
+Przykład użycia atrapy ręcznie będzie opierał się na programie, który będzie odtwarzał pewien dźwięk zapisany w formacie .wav.
+
+Jego interfejs wygląda następująco:
+
+public interface Environmental {
+	public long getTime();
+	public void playWavFile(String string);
+}
+Testowana klasa wygląda następująco:
+
+import java.util.Calendar;
+
+public class Checker {
+	private Environmental env;
+
+	public Checker(Environmental anEnv) {
+		env = anEnv;
+	}
+	
+	public void remainder() {
+		Calendar cal = Calendar.getInstance();
+		cal.setTimeInMillis(env.getTime());
+		int hour = cal.get(Calendar.HOUR_OF_DAY);
+		if(hour >= 17) {
+			env.playWavFile("gwizdek.wav");
+		}
+	}
+}
+Należy zauważyć, że klasa Checker zależy od klasy Environmental (środowiska). Domyślnie w aplikacji jest środowisko, które naprawdę odtwarza plik gwizdek.wav. My natomiast utworzymy ręczną atrapę, która będzie symulować odtwarzanie gwizdka.
+
+public class MockSystemEnvironment implements Environmental {
+
+	private boolean playedWav = false;
+	private long currentTime;
+	
+	public long getTime() {
+		return currentTime;
+	}
+	
+	public void setTime(long time) {
+		currentTime = time;
+	}
+	
+	public void playWavFile(String filename) {
+		playedWav = true;
+	}
+	
+	public boolean wavWasPlayed() {
+		return playedWav;
+	}
+	
+	public void resetWav() {
+		playedWav = false;
+	}
+	
+}
+Zakładamy tutaj, że odtwarzanie pliku zapisujemy w zmiennej boolowskiej o nazwie playedWav.
+
+Testy tego środowiska (z wykorzystaniem ręcznie stworzonej atrapy) wygląda następująco:
+
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.util.Calendar;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+class TestChecker {
+	
+	MockSystemEnvironment env; 
+	Calendar cal;
+	Checker checker;
+	long t1;
+	
+	@BeforeEach
+	public void setUp() {
+		env = new MockSystemEnvironment();
+		checker = new Checker(env);
+		cal = Calendar.getInstance();
+		cal.set(Calendar.YEAR, 2018);
+		cal.set(Calendar.MONTH,4);
+		cal.set(Calendar.DAY_OF_MONTH,9);
+		cal.set(Calendar.HOUR_OF_DAY, 16);
+		cal.set(Calendar.MINUTE, 55);
+		t1 = cal.getTimeInMillis();
+	}
+
+	@Test
+	public void testQuittingTime() {
+		
+		long t1 = cal.getTimeInMillis();
+		env.setTime(t1);
+		checker.remainder();
+		assertFalse(env.wavWasPlayed());
+	}
+	
+	@Test
+	public void testSetUpTo17() {
+		t1 += (5*60*1000);
+		env.setTime(t1);
+		checker.remainder();
+		assertTrue(env.wavWasPlayed());
+	}
+	
+	@Test
+	public void testSetUpTo18_55() {
+		t1 += 2*60*60*1000;
+		env.setTime(t1);
+		checker.remainder();
+		assertTrue(env.wavWasPlayed());
+	}
+	
+	@AfterEach
+	public void tearDown() {
+		env.resetWav();
+	}
+
+}
+Cały przykładowy projekt znajduje się pod adresem: https://stepik.org/media/attachments/lesson/207545/MockExample.zip

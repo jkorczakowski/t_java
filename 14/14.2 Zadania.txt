@@ -1,0 +1,31 @@
+Zadanie 1 (0.2 pkt)
+
+Do pokazanego przykładu dokończ metodę thenPowersAndSizeIssizepowers(ExamplesTable table) uzupełniając ją o odpowiednią asercję. Następnie dopisz kolejny wiersz do pokazanego przykładowego scenariusza i dokonaj zmian w metodach tak, aby scenariusz ten przeszedł pozytywnie.
+
+Jako odpowiedź prześlij scenariusz, kod obsługi scenariusza oraz printscreen z powodzenia scenariusza.
+
+
+
+Zadanie 2 (0.3 pkt)
+
+Napisz testy akceptacyjne (co najmniej trzy) dotyczące dowolnej strony, która zawiera panel logowania. Testy akceptacyjne powinny znajdować się w dwóch różnych plikach o rozszerzeniu .story.
+
+Jako odpowiedź prześlij scenariusze kod obsługi scenariuszy oraz printscreen z powodzenia scenariuszy.
+
+
+
+Zadanie 3 (0.2 pkt)
+
+Wykorzystując testy parametryczne napisz testy akceptacyjne dla dowolnej strony, która posiada pole wyszukiwania (search).
+
+Jako odpowiedź prześlij scenariusz kod obsługi scenariusza oraz printscreen z powodzenia scenariusza.
+
+
+
+Zadanie 4 (0.3 pkt)
+
+Na wielu stronach internetowych istnieją linki, które pobierają jakieś pliki na dysk komputera. Napisz testy akceptacyjne, weryfikujące tę funkcjonalność.
+
+Uwaga: Do tego zadania najlepiej używać przeglądarki, która nie będzie pytać się o potwierdzenie pobrania pliku (tak jak to ma miejsce w przypadku przeglądarki MozillaFirefox.
+
+Jako odpowiedź prześlij scenariusz kod obsługi scenariusza oraz printscreen z powodzenia scenariuszy.

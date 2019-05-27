@@ -1,0 +1,97 @@
+Zadanie 1 (0.5 pkt)
+
+Rozważmy następującą klasę, która reprezentuje dziennik internetowy uczniów:
+
+import java.io.Serializable;
+import com.google.common.base.Preconditions;
+
+public class Note implements Serializable {
+	
+	private final String name;
+	private final float note;
+	
+	public static Note of(final String name, final float note) {
+		return new Note(name, note);
+	}
+	public String getName() {
+		return name;
+	}
+	public float getNote() {
+		return note;
+	}
+	private Note(String name, final float note) {
+		Preconditions.checkArgument(name != null, "Imię ucznia nie może być null");
+		name = name.trim();
+		Preconditions.checkArgument(!name.trim().isEmpty(), "Imię ucznia nie może być puste");
+		Preconditions.checkArgument(note >= 2.0f && note <= 6.0f, "Niewłaściwa ocena");
+		
+		this.name = name;
+		this.note = note;
+	}
+}
+Utwórz projekt za pomocą narzędzia Maven oraz przy użyciu JUnit5 przetestuj powyższą klasę.
+
+Jako odpowiedź prześlij kod testów, printscreen z powodzenia testów oraz pokrycie klasy Note (w raporcie JaCoCo pliku .html).
+
+
+
+Zadanie 2 (1 pkt)
+
+Weźmy do poprzedniego zadania następujące interfejsy odpowiedzialne za działanie dziennika internetowego:
+
+// Interfejs odpowiedzialny za obsługę serwisu programu
+public interface NotesService {
+	void add(Note note);
+	float averageOf(String name);
+	void clear();
+}
+
+// Interfejs obsługujący przechowywanie danych
+public interface NotesStorage {
+  void add(Note note);
+  List<Note> getAllNotesOf(String name);
+  void clear();
+}
+Niech klasa NotesServiceImpl będzie implementacją interfejsu NotesService.
+
+import java.util.Collection;
+
+public class NotesServiceImpl implements NotesService {
+
+	public static NotesServiceImpl createWith(final NotesStorage storageService) {
+		return new NotesServiceImpl(storageService);
+	}
+	
+	@Override
+	public void add(Note note) {
+		storageService.add(note);
+	}
+
+	@Override
+	public float averageOf(String name) {
+		float sum = 0.0f;
+		final Collection<Note> notes = storageService.getAllNotesOf(name);
+		for (final Note note: notes) {
+			sum += note.getNote();
+		}
+		return sum / notes.size();
+	}
+
+	@Override
+	public void clear() {
+		storageService.clear();
+	}
+	
+	private NotesServiceImpl(final NotesStorage storageService) {
+		this.storageService = storageService;
+	}
+	private final NotesStorage storageService;
+Można zaobserwować, że klasa NotesServiceImpl korzysta z klasy NotesStorage.
+
+Wzorując się na pokazanym przykładzie przetestuj klasę NotesServiceImpl. 
+
+Wskazówki:
+
+Należy utworzyć ręcznie atrapę korzstającą z interfejsu NotesStorage.
+Można skorzystać z MultiMap z pakietu Google Guava.
+Jako odpowiedź prześlij prinscreen z powodzenia testów, kod testów oraz kod ręcznej atrapy NotesStorage.

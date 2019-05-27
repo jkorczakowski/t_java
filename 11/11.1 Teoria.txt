@@ -1,0 +1,418 @@
+Kiedy działają testy, aplikacja nie zawsze może odpowiadać z tę samą prędkością. Może na przykład upłynąć kilka sekund, zanim pasek postępu osiągnie 100%, wyświetli się komunikat o stanie, uaktywni przycisk czy też pokaże wyskakujące okno.
+
+Spodziewane problemy z czasem można rozwiązać poprzez odpowiednie zsynchronizowanie testów. W ten sposób możemy zyskać pewność, że przed wykonaniem następnego kroku Selenium WebDriver będzie czekać, aż aplikacja osiągnie gotowość do jego wykonania. Istnieje również kilka sposobów, które można zastosować do zsynchronizowania testu. Zaliczają się do nich między innymi:
+
+Oczekiwania niejawne
+Oczekiwania jawne
+Oczekiwanie przy pomocy klasy FluentWait
+
+
+
+Selenium WebDriver pozwala na synchronizowanie testów bazujące na niejawnym oczekiwaniu. Jeśli WebDriver nie może znaleźć elementu w modelu DOM, a w teście zaimplementowano niejawne oczekiwanie, to czeka przez zdefiniowany odcinek czasu, aż element pojawi się w modelu DOM. Po upływie określonego czasu WebDriver ponowi próbę wyszukiwania elementu. Jeśli elementu nie znajdzie w określonym czasie, zostanie zgłoszony wyjątek lub zwrócona pusta lista (w zależności od użytej funkcji wyszukiwania elementów).
+
+Należy pamiętać, że jednorazowe ustawienie niejawnego oczekiwania powoduje, że obowiązuje ono przez cały czas życia obiektu WebDriver.
+
+Poniższy przykład pokazuje użycia oczekiwania niejawnego w narzędziu Selenium WebDriver:
+
+import static org.junit.Assert.*;
+
+import io.github.bonigarcia.wdm.WebDriverManager;
+import org.junit.jupiter.api.*;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
+
+public class GoogleFindTest {
+	
+	//Przykłady znajdowania elementów na stronie www bez elementów xpath
+
+	private static WebDriver driver;
+
+	@BeforeAll
+	public static void setUp(){
+		WebDriverManager.chromedriver().setup();
+		driver = new ChromeDriver();
+		driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+	}
+
+	@BeforeEach
+	public void setDefaultPage() throws Exception {
+    	driver.get("https://www.google.pl");
+	}
+
+	@AfterAll
+	public static void tearDown() throws Exception {
+		driver.quit();
+	}
+
+	@Test
+	public void findById() {
+		WebElement element = driver.findElement(By.id("searchform"));
+		assertNotNull(element);
+	}
+	
+	@Test
+	public void findByName() {
+		WebElement element = driver.findElement(By.name("q"));
+		assertNotNull(element);
+	}
+	
+	@Test
+	public void findByClass() {
+		WebElement element = driver.findElement(By.className("gsfi"));
+		assertNotNull(element);
+	}
+	
+	@Test
+	public void findBylinkText() {
+		WebElement element = driver.findElement(By.linkText("Gmail"));
+		assertNotNull(element);
+	}
+	
+	@Test
+	public void findByPartiallinkText() {
+		WebElement element = driver.findElement(By.partialLinkText("ma"));
+		assertNotNull(element);
+	}
+	
+	@Test
+	public void findByTagName() {
+		WebElement element = driver.findElement(By.tagName("div"));
+		assertNotNull(element);
+	}
+	
+	@Test
+	public void findByCssSelector() {
+		WebElement element = driver.findElement(By.cssSelector("input.gsfi"));
+		assertNotNull(element);
+	}
+
+
+}
+
+
+
+Selenium WebDriver pozwala na stosowanie synchronizacji testów w trybie jawnego oczekiwania. Tryb ten zapewnia lepszy sposób czekania w porównaniu z oczekiwaniem niejawnym. Przy tym rodzaju oczekiwania można pisać oraz stosować predefiniowane lub niestandardowe warunki wznawiania kodu.
+
+Służą do tego obiekty klasy WebDriverWait oraz ExpectedConditions, które implementują podstawowe oczekiwanie jawne.
+
+Klasa ExpectedConditions oferuje zbiór predefiniowanych warunków oczekiwania na wznowienie działania kodu.
+
+Poniższa tabela przedstawia podstawowe metody (nie wszystkie) będące w klasie ExpectedConditions: 
+
+Warunek predefiniowany	Metoda Selenium
+Element jest widoczny i aktywny	elementToBeClickable(By locator)
+Element jest zaznaczony	elementToBeSelected(WebElement element)
+Obecność elementu	presenceOfElementLocated(By locator)
+Element zawiera określony tekst	textToBePresentInElement(By locator, String text)
+Wartość elementu	textToBePresentInElementValue(By locator, String text)
+Tytuł	titleContains(String title)
+Poniższy przykład pokazuje użycie oczekiwania jawnego:
+
+import static org.junit.Assert.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.openqa.selenium.By;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+
+import io.github.bonigarcia.seljup.SeleniumExtension;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+@ExtendWith(SeleniumExtension.class)
+public class DuckDuckTest {
+	
+	private ChromeDriver driver;
+
+	public DuckDuckTest(ChromeDriver driver) {
+		this.driver = driver;
+	}
+
+	@BeforeEach
+	public void setDefaultPage() {
+		driver.get("https://duckduckgo.com/");
+	}
+
+	@Test
+	public void testTitlePage() {
+    	assertEquals("DuckDuckGo — Prywatność, po prostu.", driver.getTitle());
+	}
+	
+	@Test
+	public void testClick() {
+		WebDriverWait wait = new WebDriverWait(driver,10);
+		wait.until(ExpectedConditions.presenceOfElementLocated(By.id("search_form_input_homepage")));
+		driver.findElement(By.id("search_form_input_homepage")).sendKeys("Mateusz Miotk");
+		driver.findElement(By.id("search_button_homepage")).click();
+		wait.until(ExpectedConditions.titleIs("Mateusz Miotk at DuckDuckGo"));
+		wait.until(ExpectedConditions.presenceOfElementLocated(By.id("links")));
+		assertEquals("Mateusz Miotk at DuckDuckGo",driver.getTitle());
+	}
+
+
+}
+
+
+
+Klasa FluentWait jest implementacją klasy Wait frameworka Selenium WebDriver. Za pomocą tej klasy możemy zdefiniować maksymalną ilość czasu oczekiwania na element lub warunek, a także częstotliwość sprawdzania warunku (podobnie jak w oczekiwaniu niejawnym). Można również podczas wyszukiwania elementu skonfigurować specyficzne typy wyjątków, takie jak wyjątek NoSuchElementException.
+
+W przeciwieństwie do poprzednich oczekiwań, przy oczekiwaniu bazującym na klasie FluentWait używane są wartości maksymalnego timeoutu i częstotliwości odpytywania. 
+
+Klasa FluentWait przydaje się do automatyzacji aplikacji AJAX lub w przypadku scenariuszy, w których czas ładowania elementu często się zmienia.
+
+Poniższy przykład ukazuje testy, przy użyciu oczekiwania jawnego z klasy FluentWait:
+
+import static org.junit.Assert.*;
+
+import java.util.NoSuchElementException;
+import java.util.concurrent.TimeUnit;
+
+
+import io.github.bonigarcia.wdm.WebDriverManager;
+import org.junit.jupiter.api.*;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.FluentWait;
+
+public class DuckDuckFluentWaitTest {
+	
+	/* Metoda FluentWait() jest bardzo podobna do ocekiwania jawnego. 
+	 * Sprawdza co ustalony interwal czasu, czy dany element się pojawił. 
+	 * Różnica z oczekiwaniem jawnym polega na ignorowaniu wyjątków.
+	 */
+	
+	
+    private WebDriver driver;
+
+	@BeforeAll
+	public static void setUp(){
+		WebDriverManager.firefoxdriver().setup();
+	}
+
+	@BeforeEach
+	public void setDefaultPage() {
+		driver = new FirefoxDriver();
+		driver.get("https://duckduckgo.com/");
+	}
+
+	@Test
+	public void testTitlePage() {
+    	assertEquals("DuckDuckGo — Privacy, simplified.", driver.getTitle());
+	}
+	
+	@Test
+	public void testClick(){
+		FluentWait<WebDriver> wait = new FluentWait<WebDriver>(driver)
+				.withTimeout(10, TimeUnit.SECONDS)
+				.pollingEvery(2, TimeUnit.SECONDS)
+				.ignoring(NoSuchElementException.class);
+		wait.until(ExpectedConditions.presenceOfElementLocated(By.id("search_form_input_homepage")));
+		driver.findElement(By.id("search_form_input_homepage")).sendKeys("Mateusz Miotk");
+		driver.findElement(By.id("search_button_homepage")).click();
+		wait.until(ExpectedConditions.titleIs("Mateusz Miotk at DuckDuckGo"));
+		assertEquals("Mateusz Miotk at DuckDuckGo",driver.getTitle());
+	}
+	
+	@Test
+	public void testClick2(){
+		FluentWait<WebDriver> wait = new FluentWait<WebDriver>(driver)
+				.withTimeout(10, TimeUnit.SECONDS)
+				.pollingEvery(2, TimeUnit.SECONDS)
+				.ignoring(NoSuchElementException.class);
+		driver.findElement(By.id("search_form_input_homepage")).sendKeys("Mateusz Miotk");
+		driver.findElement(By.id("search_button_homepage")).click();
+		wait.until(ExpectedConditions.titleIs("Mateusz Miotk at DuckDuckGo"));
+		assertEquals("Mateusz Miotk at DuckDuckGo",driver.getTitle());
+	}
+
+	@AfterEach
+	public void teardown(){
+		driver.quit();
+	}
+	
+}
+
+
+
+Jednym z problemów konfiguracji narzędzia Selenium WebDriver było ściągnięcie odpowiednich driverów (na przykład geckodriver dla MozillaFirefox czy chromedriver dla przeglądarki GoogleChrome). Istnieją rozszerzenia, pozwalające na automatyczne ściągnięcie danych driverów dla danej przeglądarki. Są to rozszerzenia WebDriverManager (https://github.com/bonigarcia/webdrivermanager) oraz SeleniumJupiter (https://github.com/bonigarcia/selenium-jupiter).
+
+Rozszerzenia te pozwalają na testowanie dla specjalnych wersji danej przeglądarki internetowej oraz mają wsparcie dla przeglądarek mobilnych. 
+
+Testowanie (sama konfiguracja) przy użyciu wyżej wspomnianych narzędzi pokazują poniższe przykłady:
+
+//Ustawienie przeglądarki przy użyciu narzędzia WebDriverManager
+import static org.junit.Assert.*;
+
+import java.util.NoSuchElementException;
+import java.util.concurrent.TimeUnit;
+
+
+import io.github.bonigarcia.wdm.WebDriverManager;
+import org.junit.jupiter.api.*;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.FluentWait;
+
+public class DuckDuckFluentWaitTest {
+	
+    private WebDriver driver;
+
+	@BeforeAll
+	public static void setUp(){
+		WebDriverManager.firefoxdriver().setup();
+	}
+
+	@BeforeEach
+	public void setDefaultPage() {
+		driver = new FirefoxDriver();
+		driver.get("https://duckduckgo.com/");
+	}
+
+}
+
+//Inna lepsza metoda konfiguracji
+
+import static org.junit.Assert.*;
+
+import java.util.concurrent.TimeUnit;
+
+import io.github.bonigarcia.wdm.WebDriverManager;
+import org.junit.jupiter.api.*;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
+
+public class GoogleFindTest {
+
+	private static WebDriver driver; //Musi być static jeżeli korzystamy z BeforeAll oraz AfterAll
+
+	@BeforeAll
+	public static void setUp(){
+		WebDriverManager.chromedriver().setup();
+		driver = new ChromeDriver();
+		driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+	}
+
+	@BeforeEach
+	public void setDefaultPage() throws Exception {
+    	driver.get("https://www.google.pl");
+	}
+
+	@AfterAll
+	public static void tearDown() throws Exception {
+		driver.quit();
+	}
+}
+ 
+
+//Ustawienia przeglądarki przy pomocy rozszerzenia SeleniumExtension
+
+
+import static org.junit.Assert.*;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.openqa.selenium.By;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+
+import io.github.bonigarcia.seljup.SeleniumExtension;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+@ExtendWith(SeleniumExtension.class)
+public class DuckDuckTest {
+	
+	private ChromeDriver driver;
+
+	public DuckDuckTest(ChromeDriver driver) {
+		this.driver = driver;
+	}
+
+	@BeforeEach
+	public void setDefaultPage() {
+		driver.get("https://duckduckgo.com/");
+	}
+
+	@Test
+	public void testTitlePage() {
+    	assertEquals("DuckDuckGo — Prywatność, po prostu.", driver.getTitle());
+	}
+	
+	@Test
+	public void testClick() {
+		WebDriverWait wait = new WebDriverWait(driver,10);
+		wait.until(ExpectedConditions.presenceOfElementLocated(By.id("search_form_input_homepage")));
+		driver.findElement(By.id("search_form_input_homepage")).sendKeys("Mateusz Miotk");
+		driver.findElement(By.id("search_button_homepage")).click();
+		wait.until(ExpectedConditions.titleIs("Mateusz Miotk at DuckDuckGo"));
+		wait.until(ExpectedConditions.presenceOfElementLocated(By.id("links")));
+		assertEquals("Mateusz Miotk at DuckDuckGo",driver.getTitle());
+	}
+
+
+}
+
+
+
+Jednym z mankamentów używania narzędzia Selenium WebDriver jest jego długie działanie (otwieranie przeglądarki, oczekiwania). Dlatego też istnieją tzw. przeglądarki bezinterfejsowe. W nich nie otwiera się okno przeglądarki, a sam przebieg odbywa się bez "zobaczenia" akcji przez użytkownika/testera. 
+
+Poniższa lista przedstawia znane przeglądarki bezinterfejsowe:
+
+HtmlUnitDriver (https://github.com/SeleniumHQ/htmlunit-driver)
+PhantomJS (nie wspierany od jakiegoś czasu: http://phantomjs.org/)
+JBrowserDriver (https://github.com/MachinePublishers/jBrowserDriver)
+Drivery geckodriver oraz chromedriver również mogą być wywoływane jako przeglądarki bezinterfejsowe. Wymaga to jednak uruchomienia odpowiednich opcji.
+
+Należy jednak pamiętać, że przeglądarki bezinterfejsowe mogą się różnić działaniem od przeglądarek interfejsowych dlatego testowanie na nich może sprawiać problemy.
+
+Poniższy przykład pokazuje przykład użycia przeglądarki HtmlUnitDriver:
+
+import static org.junit.Assert.assertEquals;
+
+import java.util.NoSuchElementException;
+import java.util.concurrent.TimeUnit;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.htmlunit.HtmlUnitDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.FluentWait;
+import io.github.bonigarcia.seljup.SeleniumExtension;
+
+@ExtendWith(SeleniumExtension.class)
+public class DuckDuckHtmlUnitTest {
+	
+	@Test
+	public void testTitlePage(HtmlUnitDriver driver) {
+		driver.get("https://duckduckgo.com/");
+    	assertEquals("DuckDuckGo — Privacy, simplified.", driver.getTitle());
+	}
+	
+	@Test
+	public void testClick(HtmlUnitDriver driver){
+		driver.get("https://duckduckgo.com/");
+		FluentWait<WebDriver> wait = new FluentWait<WebDriver>(driver)
+				.withTimeout(10, TimeUnit.SECONDS)
+				.pollingEvery(2, TimeUnit.SECONDS)
+				.ignoring(NoSuchElementException.class);
+		wait.until(ExpectedConditions.presenceOfElementLocated(By.id("search_form_input_homepage")));
+		driver.findElement(By.id("search_form_input_homepage")).sendKeys("Mateusz Miotk");
+		driver.findElement(By.id("search_button_homepage")).click();
+		wait.until(ExpectedConditions.titleIs("Mateusz Miotk at DuckDuckGo"));
+		assertEquals("Mateusz Miotk at DuckDuckGo",driver.getTitle());
+	}
+	
+}
+Cały projekt jest do pobrania pod adresem: https://stepik.org/media/attachments/lesson/207556/OczekwiniaSelenium.zip

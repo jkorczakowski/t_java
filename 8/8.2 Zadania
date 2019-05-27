@@ -1,0 +1,62 @@
+Zadanie 1 (0.2 pkt)
+
+Dopisz do pokazanego przykładu kilka testów z użyciem narzędzia Mockito oraz EasyMock (dla każdego z narzędzi po co najmniej 5 testów).
+
+Jako odpowiedź prześlij printscreen z powodzenia testów oraz kod testów.
+
+
+
+Zadanie 2 (0.6 pkt)
+
+Wykorzystaj narzędzia Mockito lub EasyMock do imitacji zachowań w pliku NotesService.java (zadanie z poprzedniego laboratorium). Te same testy napisz przy pomocy narzędzia Mockito i EasyMock.
+
+Wskazówka: Metody w NotesService nie zwracają wartości boolowskich, a dokonują skutków ubocznych (dodając na liście oceny), to należy skorzystać tutaj z metody doAnswer(), której schemat wygląda następująco:
+
+doAnswer(new Answer<Void>() {
+  public void answer(final InvocationOnMock invocation) throws Throwable {
+    // Jakas treść
+    return null;
+  }
+}).when(mock).funkcja(argument)
+Jako odpowiedź prześlij printscreen z powodzenia testów oraz kod testów.
+
+
+
+Zadanie 3 (0.6 pkt)
+
+Rozważmy następujący interfejs oraz klasę obsługujące pewne operacje na napisach:
+
+import com.google.common.base.Function;
+
+public interface ReverseLetters extends Function<String, String> {
+	
+}
+import com.google.common.base.Joiner;
+import com.google.common.base.Preconditions;
+import com.google.common.base.Splitter;
+import com.google.common.collect.Iterables;
+
+
+public class ReverseWords implements ReverseLetters {
+	public static ReverseWords with(final ReverseLetters reversePhrase) {
+		return new ReverseWords(reversePhrase);
+	}
+	public String apply(final String sentence) {
+		final Iterable<String> words = Splitter.on(' ').split(sentence);
+		return Joiner.on(' ').join(Iterables.transform(words, reversePhrase));
+	}
+	
+	private ReverseWords(final ReverseLetters reversePhrase) {
+		Preconditions.checkArgument(reversePhrase != null);
+		this.reversePhrase = reversePhrase;
+	}
+	private final ReverseLetters reversePhrase;
+}
+Wykonaj następujące polecenia:
+
+Utwórz klasę ReverseUppercase, która będzie zamieniać tekst na wielkie litery.
+Utwórz klasę ReverseForceUpperCase, która będzie zwracać sytuację wyjątkową, jeżeli przekazany tekst zawiera małe litery.
+Utwórz klasę RotString, która będzie przestawiać litery o dany indeks. Na przykład dla słowa mama przestawienie o 1 wykona nam słowo: amam. Możemy założyć stałe przestawienie na przykład o 3.
+Wszystkie klasy nie mają mieć implementacji metod (mają tylko dziedziczyć po interfejsie ReverseLetters) 
+Wykorzystując narzędzia Mockito oraz EasyMock oraz stworzone wcześniej klasy, przetestuj klasę ReverseWords.
+Jako odpowiedź prześlij printscreen z powodzenia  testów, kod klas oraz kod testów.

@@ -1,0 +1,123 @@
+Do zdobycia dzisiaj 2 pkt.
+
+Zadania można oddawać do końca dnia z uwagą taką, że:
+
+Osoby, które nie były na zajęciach oraz nie mające usprawiedliwienia otrzymują i tak zero punktów za zadania.
+Po pierwszym deadline, którym jest dzisiaj godzina 18.00 punkty będą maleć liniowo do końca dnia.
+
+
+
+Zadanie 1 (0.2 pkt)
+
+Dowolne poprzednie zadanie (za wyjątkiem klasy FizzBuzz) przerobić testy na użycie JUnit5.
+
+Jako odpowiedź prześlij printscreen z powodzenia testów oraz kod testów.
+
+
+
+Zadanie 2 (0.5 pkt)
+
+Poniższy kod realizuje obliczanie funkcji kwadratowej czyli f(x)=ax2+bx+c.
+
+Przy użyciu JUnit4 oraz JUnit5 przetestuj poniższą klasę. W przypadku jakikolwiek błędów w klasie popraw je. 
+
+Testy przeprowadź w dwóch osobnych klasach (osobno dla JUnit4 i osobno dla JUnit5).
+
+Porównaj czas wykonania testów. Czy widać jakąś różnicę?
+
+Jako odpowiedź prześlij printscreen z powodzenia testów (wraz z pokryciem kodu), kod programu oraz kod testów.
+
+import java.io.Serializable;
+
+public final class QuadraticFunction implements Serializable {
+
+	public static QuadraticFunction of(final double a, final double b, final double c) {
+		return new QuadraticFunction(a,b,c);
+	}
+	
+	public double getA() {
+		return a;
+	}
+
+	public double getB() {
+		return b;
+	}
+
+	public double getC() {
+		return c;
+	}
+
+	public double getX1() {
+		return x1;
+	}
+
+	public double getX2() {
+		return x2;
+	}
+	
+	private QuadraticFunction(final double a, final double b, final double c) {
+		this.a = a;
+		this.b = b;
+		this.c = c;
+		final double delta = b * b - 4 * a * c;
+		if (delta > 0) {
+			x1 = (-b - delta) / 2 * a;
+			x2 = (-b + delta) / 2 * a;
+		}
+		else if (delta == 0) {
+			x1 = x2 = -b / 2 / a;
+		}
+		else {
+			throw new IllegalArgumentException("No real solution for these parameters");
+		}
+	}
+
+	private final double a;
+	private final double b;
+	private final double c;
+	private final double x1;
+	private final double x2;
+	
+}
+
+
+
+Zadanie 3 (0.5 pkt)
+
+Wzorując się na pokazanym przykładzie utwórz plik zawierający przypadki testowe dla poprzedniego zadania (funkcja kwadratowa). 
+
+Następnie wykorzystując narzędzie JUnit4 lub JUnit5 przetestuj tę klasę przy użyciu utworzonego pliku z przypadkami testowymi.
+
+Dokonaj refaktoryzacji pokazanego przykładu tak, aby nie był on zbyt długi w głównym teście.
+
+Jako odpowiedź prześlij printscreen z powodzenia testów, kod testów oraz kod pliku zawierający przypadki testowe.
+
+
+
+Zadanie 4 (0.4 pkt)
+
+Wykorzystując pokazany przykład oraz narzędzie JUnit4 napisz testy parametryczne do dowolnego zadania (oprócz klasy FizzBuzz) przy użyciu klasy Parameterized wraz z użyciem klauzuli @RunWith
+
+Jako odpowiedź prześlij printscreen z powodzenia testów oraz kod testów.
+
+
+
+Zadanie 5 (0.4 pkt)
+
+Jednym z prostszych metod załączania testowych danych do testów w JUnit4 jest użycie plików z rozszerzeniem .csv przy użyciu JUnitParams. Poczytaj o JUnitParams oraz do dowolnego przykładu (oprócz klasy FizzBuzz) zaimplementuj ich użycie.
+
+Uwzględnij w pliku sytuacje wyjątkowe.
+
+Jako odpowiedź prześlij printscreen z powodzenia testów, kod testów oraz zawartość pliku .csv. 
+
+
+
+Zadanie 6 - Dodatkowe (1 pkt)
+
+Można je wykonać po wykonaniu poprzednich zadań na co najmniej 1.5 pkt
+
+Dopisz do pokazanej funkcji kwadratowej obsługę liczb zespolonych.
+
+Przetestuj tę klasę przy pomocy JUnit5.
+
+Jako odpowiedź prześlij printscreen z powodzenia testów, kod testów oraz kod zmodyfikowanej funkcji kwadratowej.

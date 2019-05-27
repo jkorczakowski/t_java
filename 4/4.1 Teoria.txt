@@ -1,0 +1,211 @@
+Bardzo często w testach korzysta się z plików testowych (przeważnie w formacie .csv). Jednym z metod obsługi tych plików jest po prostu otwarcia pliku i wczytywania (linijka po linijce) danych testowych, gdzie pierwszym elementem jest wartość oczekiwana (expected).
+
+Obsługę plików (wraz z omijaniem linii #, które oznaczają komentarze): realizuje następujący kod:
+
+package test;
+import main.Largest;
+
+import static org.junit.Assert.*;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.util.ArrayList;
+import java.util.StringTokenizer;
+import org.junit.Test;
+
+public class LargestFileTest {
+
+    static BufferedReader rdr;
+    String line;
+
+    @Test
+    public void testFromFile() throws Exception {
+        /*Pamietać o ustawieniu katalogu projektu jako main directory (zakładka edit configurations)*/
+        rdr = new BufferedReader(new FileReader("src/test/test.txt"));
+        while((line = rdr.readLine()) != null) {
+            if (line.startsWith("#")) {
+                continue;
+            }
+
+            StringTokenizer st = new StringTokenizer(line);
+            if (!st.hasMoreTokens()) {
+                continue;
+            }
+
+            String val = st.nextToken();
+            int expected = Integer.valueOf(val).intValue();
+            ArrayList<Integer> argumentList = new ArrayList<Integer>();
+            while (st.hasMoreTokens()) {
+                argumentList.add(Integer.valueOf(st.nextToken()));
+            }
+
+            int[] arguments = new int[argumentList.size()];
+            for(int i=0; i<argumentList.size(); i++) {
+                arguments[i] = ((Integer) argumentList.get(i)).intValue();
+            }
+            assertEquals(expected, Largest.largest(arguments));
+        }
+    }
+
+}
+Plik test.txt wygląda następująco:
+
+9 7 8 9
+9 9 8 7
+9 9 8 9
+#
+-7 -7 -8 -9
+-7 -8 -7 -8
+-7 -9 -7 -8
+
+7 -9 -7 -8 7 6 4
+9 -1 0 9 -7 4
+#
+1 1 
+0 0
+2147483647 2147483647
+-2147483648 -2147483648
+
+
+
+Innym sposobem obsługi plików testowych jest zastosowanie testów parametrycznych. W JUnit4 służy do tego Runner o nazwie Parameterized. 
+
+Więcej na temat adnotacji @RunWith w JUnit4 znajduje się pod adresem: https://github.com/junit-team/junit4/wiki/test-runners
+
+Przykład obsługi testu parametrycznego pokazuje poniższy kod:
+
+package test;
+import main.GCD;
+
+import static org.junit.Assert.*;
+import java.util.Arrays;
+import java.util.Collection;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
+
+@RunWith(Parameterized.class)
+public class GCDTest {
+
+
+    private GCD test;
+    private int inputA;
+    private int inputB;
+    private int output;
+
+    public GCDTest(int a, int b, int c){
+        inputA = a;
+        inputB = b;
+        output = c;
+    }
+
+    @Parameters
+    public static Collection<Object[]> data() {
+        Object[][] c = {
+                {4,8,4}, {12,24,12}, {13,12,1}, {100,25,25}
+        };
+        return  Arrays.asList(c);
+    }
+
+    @Before
+    public void setUp(){
+        test = new GCD();
+    }
+
+    @Test
+    public void testNWDForPositiveNumbers() {
+        assertEquals(output,test.NWD(inputA, inputB));
+    }
+
+    @After
+    public void teardown(){
+        test = null;
+    }
+
+}
+
+Cały projekt (w InteliJ) dotyczący testów parametrycznych przy użyciu JUnit4 znajduje się pod adresem:https://stepik.org/media/attachments/lesson/207543/ParameterizedTestingExample.zip
+
+
+
+Największą bolączką narzędzia JUnit4 jest brak rozszerzalności tzn. nie można w łatwy sposób użyć tzw. dwóch runnerów (Słowo kluczowe @RunWith) w jednej klasie testowej.
+To spowodowało że we wrześniu 2017 roku po ponad dwóch latach wyszła nowa wersja narzędzia JUnit5 (obecnie wersja 5.4).
+
+Strona główna JUnit5 znajduje się pod adresem: https://junit.org/junit5/.
+
+
+
+Różnica w słowach kluczowych między JUnit4 a JUnit5:
+
+JUnit4	        JUnit5
+@Before	        @BeforeEach
+@After	        @AfterEach
+@BeforeClass	@BeforeAll
+@AfterClass	    @AfterAll
+@Ignore	        @Disabled
+@RunWith	    @ExtendWith
+Ogólnie rzecz biorąc w JUnit5:
+
+Przedewszystkim rozszerzalność: można dodawać różne runnery do jednej klasy testowej.
+@DisplayName, służy do opisywania testów nie tylko w nazwie metody (lepsza forma dokumentacji)
+@Nested pozwala na zagnieżdżanie innych klas testowych w klasach
+@Tag pozwala na kontrolę uruchamiania testów (np. wyłączania konkretnych testów) w narzędzich Maven czy Gradle
+@RepeatedTest pozwala na powatarzanie testów, co stanowi jakiś wstęp do testów obciążeniowych.
+
+
+
+W JUnit5 istnieje możliwość łączenia asercji w jedną asercję poprzez asercję assertAll(...). Powoduje ona sprawdzenie po kolei każdej z asercji (wyrażonej przy pomocy wyrażenia Lambda). W przypadku niespełnienia którejkolwiek z asercji test zakończy się niepowodzeniem.
+
+Przykład użycia asercji assertAll:
+
+@Test
+void assertAllExample() {
+	assertAll("Many asertions", () -> {
+		assertTrue(true);
+		assertEquals("Fizz", sut.play(30));
+	});
+}
+	
+@Test
+void assertAllExample2() {
+	assertAll("Many asertions", () -> {
+		assertFalse(true, () -> "Is false");
+		assertEquals("Fizz", sut.play(30), () -> "Not Fizz!!!");
+	});
+}
+Inne przykłady z wykorzystaniem asercji assertThrows (do obsługi wyjątków), adnotacji @DisplayName, @RepeatedTest oraz @Disabled znajduje się poniżej:
+
+@DisplayName("Play FizzBuzz with number = 0")
+@Test
+void testNumberException() {
+	Assertions.assertThrows(IllegalArgumentException.class, () -> sut.play(0));
+}
+
+@DisplayName("Example of repeated test")
+@Test
+@RepeatedTest(value = 4, name = "Repetition {currentRepetition} of {totalRepetition}")
+void exampleRepeatedTest() {
+	assertEquals("Fizz", sut.play(3));
+}
+
+@Test
+@DisplayName("Wrong test")
+@Disabled
+void wrongTest() {
+	assertEquals(2,1);
+}
+
+
+
+W narzędziu JUnit5 istnieje pojęcie asumpcji. Asumpcja jest to asercja/nie asercja, która jest odpalana przed testem. Przeważnie służy ona do sprawdzania środowiska. W przypadku nie zajścia asumpcji test zostanie oznaczony jako nieuruchomiony, mimo że zwróci się wyjątek.
+
+Przykład wykorzystania asumpcji w JUnit5: 
+
+@Test
+void assumeExample() {
+  assumeTrue(!(5 != (3+3)));
+  assertEquals("Fizz", sut.play(15));
+}
+Pełny projekt z zastosowaniem JUnit5 znajduje się pod adresem:https://stepik.org/media/attachments/lesson/207543/JUnit5Example.zip

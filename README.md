@@ -1,2 +1,3 @@
-# t_java
-Testing Software Java, University of Gdansk, Semester VI
+# Testowanie Aplikacji Java
+
+1. [1 - Programowanie w języku Java - przypomnienie cz. 1] ()

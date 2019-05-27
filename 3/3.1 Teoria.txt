@@ -1,0 +1,234 @@
+Unit to prosta w użyciu i łatwa do opanowania platforma do pisania i uruchamiania testów. Każdy test ma postać metody. Każda taka metoda powinna reprezentować określony znany scenariusz wykonywania fragmentów kodu. Sprawdzenie kodu odbywa się w wyniku porównania oczekiwanych danych wyjściowych lub działań z rzeczywistymi danymi wyjściowymi.
+Oprócz JUnit można używać również platformę TestNG, z różnicą taką, że testy uporządkowane są w klasach.
+
+
+Jako przykład użycia narzędzia JUnit  oraz techniki TDD, będzie klasa FizzBuzz, która ma następujące wymagania:
+
+Wczytujemy liczbę całkowitą.
+Klasa ma mieć funkcję print, która jako argument przyjmuje liczbę.
+Funkcja ta sprawdza, czy liczba jest podzelna przez 15. Jeżeli tak, to zwracamy string "FizzBuzz".
+W przeciwnym przypadku jeżeli jest podzielna przez 5 zwracamy "Buzz".
+W przeciwnym przypadku jeżeli jest podzielna przez 3 zwracamy "Fizz".
+W przeciwym przypadku (jeżeli nie jest ani podzielna przez 3,5 ani 15, to zwracamy tę liczbę jako string.
+
+
+Bardzo popularną techniką łączącą programowanie z testowaniem jednostkowym jest TDD (Test-Driven Development).
+Technika ta polega na tym, że najpierw piszemy test (najczęściej jednostkowy), a następnie piszemy kod, aby ten test przeszedł.
+TDD ma dużo zalet do których należą między innymi:
+
+Skraca czas wprowadzanych produktów
+Ułatwia refaktoryzacje (czyli optymalizowanie kodu)
+Sprzyja luźnemu łączeniu komponentów (fragmentów kodu)
+Dokumentacja kodu
+Brak konieczności debugowania
+Symulacje działań (poprzez stosowanie atrap - EasyMock, Mockito
+itd.)
+TDD to proces opraty na powtarzaniu bardzo krótkiego cyklu pracprogramistycznych. Wykorzystywane jest tu podejście z XP (eXtreme
+programming), zachęcająca do tworzenia prostych projektów, które z wysokim prawdopodobieństwem są prawidłowe.
+Myśląc o TDD należy mieć na myśli następujace etapy:- Czerwone, Zielone, Refaktoryzacja.
+Natomiast procedura napisania testu jest następująca:
+
+Napisz test.
+Uruchom wszystkie testy.
+Napisz kod rozwiązania.
+Uruchom wszystkie testy.
+Przeprowadź refaktoryzację.
+Uruchom wszystkie testy.
+W trakcie pisania testów rozwiązanie znajduje się w stanie czerwone, ponieważ test kończy się niepowodzeniem.
+Po zakończeniu kodu rozwiązania powiązanego z testem wszystkie testy powinny zakończyć się powowdzeniem (stan zielone).
+Następnie powinno się przeprowadzić refaktoryzację kodu (stan refaktoryzacji).
+
+
+Oto kilka porad dotycząca techniki TDD:
+
+Nie traktuj kodu napisanego w celu przejścia ostatniego testu jako ostatecznej wersji rozwiązania. Napisz tyle kodu ile potrzeba, by test zakończył się powodzeniem!
+Głównym celem stosowania TDD jest uzyskanie projektu kodu umożliwiającego przeprowadzeniem testów. Testy są bardzo przydatnym efektem ubocznym całego procesu!
+Testy mogą służyć jako wykonywalna dokumentacja, a TDD to najczęściej stosowany sposób tworzenia i konserwacji takich testów.
+Jeżeli któryś z wcześniejszych testów zakończył się porażką, oznacza to, że ostatnie zmiany uszkodziły rozwiązanie. Dlatego należy wycofać modyfikację.
+
+
+Napiszmy następujący test do naszej klasy FizzBuzz:
+
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+public class FizzBuzzTest {
+
+    @Test
+    public void trivialTest() {
+        assertTrue(true);
+    }
+
+    @Test
+    public void test_fizz_method(){
+        FizzBuzz temp = new FizzBuzz();
+        assertEquals("Fizz",temp.print(3));
+        assertEquals("Fizz",temp.print(9));
+    }
+}
+Teraz uruchamiając testy nasz projekt się nie wykona. Należy napisac odpowiedni kod  metody print.
+
+public class FizzBuzz {
+  public String print(int number){
+
+      if(number % 3 == 0){
+          return "Fizz";
+      }
+      return "";
+  }
+}
+Teraz nasz projekt wykonuje się poprawnie. Napiszmy kolejny test do naszej klasy:
+
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+public class FizzBuzzTest {
+
+    @Test
+    public void trivialTest() {
+        assertTrue(true);
+    }
+
+    @Test
+    public void test_fizz_method(){
+        FizzBuzz temp = new FizzBuzz();
+        assertEquals("Fizz",temp.print(3));
+        assertEquals("Fizz",temp.print(9));
+    }
+
+    @Test
+    public void test_buzz_method(){
+        FizzBuzz temp = new FizzBuzz();
+        assertEquals("Buzz",temp.print(5));
+        assertEquals("Buzz",temp.print(20));
+    }
+}
+Teraz znowu projekt nie przechodzi (stan czerwony). Rozbudowujemy naszą funkcję następująco:
+
+public class FizzBuzz {
+  public String print(int number){
+
+      if(number % 3 == 0){
+          return "Fizz";
+      }
+      else if (number % 5 == 0){
+          return "Buzz";
+      }
+      return "";
+  }
+}
+Teraz nasz projekt przechodzi.
+
+
+Poprzednie testy mają jedną wadę: Każdy z nich tworzy obiekt Klasy FizzBuzz. Można to zautomatyzować używając poleceń @Before oraz @After. Wówczas kod testów w naszej klasie wyglądałby następująco:
+
+import org.junit.Test;
+import org.junit.Before;
+import org.junit.After;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+public class FizzBuzzTest {
+
+    FizzBuzz temp;
+
+    @Before
+    public void setUp(){
+        temp = new FizzBuzz();
+    }
+
+    @Test
+    public void trivialTest() {
+        assertTrue(true);
+    }
+
+    @Test
+    public void test_fizz_method(){
+        assertEquals("Fizz",temp.print(3));
+        assertEquals("Fizz",temp.print(9));
+    }
+
+    @Test
+    public void test_buzz_method(){
+        assertEquals("Buzz",temp.print(5));
+        assertEquals("Buzz",temp.print(20));
+    }
+
+    @After
+    public void teardown(){
+        temp = null;
+    }
+}
+
+
+Do naszej metody print doszło kolejne wymaganie: W przypadku liczby ujemnej program ma zwrócić wyjątek: IllegalArgumentException.
+
+Napiszmy test w JUnit, który realizuje powyższe wymaganie:
+
+import org.junit.Test;
+import org.junit.Before;
+import org.junit.After;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+public class FizzBuzzTest {
+
+    FizzBuzz temp;
+
+    @Before
+    public void setUp(){
+        temp = new FizzBuzz();
+    }
+
+    @Test
+    public void trivialTest() {
+        assertTrue(true);
+    }
+
+    @Test
+    public void test_fizz_method(){
+        assertEquals("Fizz",temp.print(3));
+        assertEquals("Fizz",temp.print(9));
+    }
+
+    @Test
+    public void test_buzz_method(){
+        assertEquals("Buzz",temp.print(5));
+        assertEquals("Buzz",temp.print(20));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void test_exception_fizz_buzz(){
+        assertEquals("FizzBuzz", temp.print(-15));
+    }
+
+    @After
+    public void teardown(){
+        temp = null;
+    }
+
+}
+Testy nie przechodzą (stan czerwony), a więc poprawmy naszą metodę print:
+
+public class FizzBuzz {
+  public String print(int number){
+
+      if(number < 0){
+          throw new IllegalArgumentException();
+      }
+      else if(number % 3 == 0){
+          return "Fizz";
+      }
+      else if (number % 5 == 0){
+          return "Buzz";
+      }
+      return "";
+  }
+}
+Cały projekt (w InteliJ) jest do pobrania https://stepik.org/media/attachments/lesson/206093/JUnitExample.zip.
+
+Lista dostępnych asercji w narzędziu JUnit jest dostępna pod adresem:http://junit.sourceforge.net/javadoc/org/junit/Assert.html

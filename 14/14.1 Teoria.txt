@@ -1,0 +1,195 @@
+Rozważmy następujący prosty kod wypisujący listę potęg dwójki:
+
+package testJBehave;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class Power {
+  
+	public List<Integer> powers(int left,int right){
+		int i;
+		List<Integer> result = new ArrayList<Integer>();
+		for(i=left; i<=right; i++){
+			if (i == 0){
+				result.add(1);
+			}
+			else{
+				result.add(2<<(i-1));
+			}
+		}
+		return result;
+	}
+	
+}
+Rozważmy, że chcemy napisać scenariusz parametryczne do przetestowania powyższej klasy. Scenariusz ten wygląda następująco:
+
+Power story
+
+Scenario: Test of power one
+
+Given the numbers:
+|left|right|
+|1|4|
+Then powers are:
+|powers|
+|2, 4, 8, 16|
+Tutaj używamy tabel parametrycznych (w odróżnieniu do słowka Examples). Kod implementacji tabel parametrycznych w JBehave (ang. ExamplesTable) wygląda następująco:
+
+package testJBehave.steps;
+
+import java.util.ArrayList;
+import java.util.Map;
+
+import org.jbehave.core.annotations.Given;
+import org.jbehave.core.annotations.Then;
+import org.jbehave.core.model.ExamplesTable;
+import testJBehave.Power;
+
+
+public class TabularSteps{
+	
+	ExamplesTable table;
+	ArrayList<String> numbers;
+	Power power;
+	@Given("the numbers: $ranksTable")
+	public void givenTheNumbersnumber(ExamplesTable ranksTable){
+		  this.table = ranksTable;
+		  this.numbers = toNumbers(ranksTable);
+		  System.out.println("Numbers are: " + numbers);
+	}
+	
+	private ArrayList<String> toNumbers(ExamplesTable table){
+		ArrayList<String> result = new ArrayList<String>();
+		for (Map<String, String> row: table.getRows()){
+			result.add(row.get("left"));
+			result.add(row.get("right"));
+		}
+		return result;
+	}
+	
+	@Then("powers are: $table")
+	public void thenPowersAndSizeIssizepowers(ExamplesTable table){
+       //Do uzupełnienia
+	}
+	
+}
+
+
+
+Teraz rozważmy scenariusz, który wykorzystuje technologię Selenium WebDriver wraz z JBehave:
+
+Meta:
+
+Narrative:
+As a user
+I want to perform an action
+So that I can achieve a business goal
+
+Scenario: scenario description
+Given a chrome browser
+When I get to google.pl
+Then Title is equal google
+Kod realizujący powyższy scenariusz może wyglądać następująco:
+
+package testJBehave.steps;
+
+import io.github.bonigarcia.wdm.WebDriverManager;
+import org.jbehave.core.annotations.AfterScenario;
+import org.jbehave.core.annotations.Given;
+import org.jbehave.core.annotations.Then;
+import org.jbehave.core.annotations.When;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+
+import static org.junit.Assert.assertEquals;
+
+public class GoogleSteps {
+
+    private static WebDriver driver;
+
+    @Given("a chrome browser")
+    public void aChromeBrowser(){
+        WebDriverManager.chromedriver().setup();
+        driver = new ChromeDriver();
+    }
+    @When("I get to google.pl")
+    public void iGetToGoogle(){
+        driver.get("https://google.pl");
+    }
+    @Then("Title is equal google")
+    public void titleIsEqualGoogle(){
+        assertEquals("Google", driver.getTitle());
+    }
+    @AfterScenario(uponOutcome = AfterScenario.Outcome.SUCCESS)
+    public void tearDown(){
+        driver.quit();
+    }
+
+}
+Runner całego projektu wygląda następująco (odpala on obydwa scenariusze - jest to modyfikacja od wersji 4.4):
+
+import org.jbehave.core.Embeddable;
+import org.jbehave.core.configuration.Configuration;
+import org.jbehave.core.configuration.MostUsefulConfiguration;
+import org.jbehave.core.embedder.EmbedderControls;
+import org.jbehave.core.i18n.LocalizedKeywords;
+import org.jbehave.core.io.CodeLocations;
+import org.jbehave.core.io.LoadFromClasspath;
+import org.jbehave.core.io.StoryFinder;
+import org.jbehave.core.junit.JUnitStories;
+import org.jbehave.core.model.ExamplesTableFactory;
+import org.jbehave.core.model.TableTransformers;
+import org.jbehave.core.parsers.RegexStoryParser;
+import org.jbehave.core.reporters.StoryReporterBuilder;
+import org.jbehave.core.steps.InjectableStepsFactory;
+import org.jbehave.core.steps.InstanceStepsFactory;
+import org.jbehave.core.steps.ParameterConverters;
+import testJBehave.steps.GoogleSteps;
+import testJBehave.steps.TabularSteps;
+
+import java.text.SimpleDateFormat;
+import java.util.List;
+
+import static org.jbehave.core.io.CodeLocations.codeLocationFromClass;
+import static org.jbehave.core.reporters.Format.*;
+import static org.jbehave.core.reporters.Format.XML;
+
+public class GoogleStoryStories extends JUnitStories {
+    public GoogleStoryStories() {
+        EmbedderControls useStoryTimeoutInSecs = configuredEmbedder().embedderControls().doGenerateViewAfterStories(true).doIgnoreFailureInStories(true)
+                .doIgnoreFailureInView(true).useThreads(2).useStoryTimeoutInSecs(60);
+    }
+
+    @Override
+    public Configuration configuration() {
+        Class<? extends Embeddable> embeddableClass = this.getClass();
+        // Start from default ParameterConverters instance
+        ParameterConverters parameterConverters = new ParameterConverters();
+        // factory to allow parameter conversion and loading from external resources (used by StoryParser too)
+        ExamplesTableFactory examplesTableFactory = new ExamplesTableFactory(new LocalizedKeywords(), new LoadFromClasspath(embeddableClass), parameterConverters, null, new TableTransformers());
+        // add custom converters
+        parameterConverters.addConverters(new ParameterConverters.DateConverter(new SimpleDateFormat("yyyy-MM-dd")),
+                new ParameterConverters.ExamplesTableConverter(examplesTableFactory));
+        return new MostUsefulConfiguration()
+                .useStoryLoader(new LoadFromClasspath(embeddableClass))
+                .useStoryParser(new RegexStoryParser(examplesTableFactory))
+                .useStoryReporterBuilder(new StoryReporterBuilder()
+                        .withCodeLocation(CodeLocations.codeLocationFromClass(embeddableClass))
+                        .withDefaultFormats()
+                        .withFormats(CONSOLE, TXT, HTML, XML))
+                .useParameterConverters(parameterConverters);
+    }
+
+    @Override
+    public InjectableStepsFactory stepsFactory() {
+        return new InstanceStepsFactory(configuration(), new GoogleSteps(), new TabularSteps());
+    }
+
+    @Override
+    protected List<String> storyPaths() {
+        return new StoryFinder().findPaths(codeLocationFromClass(this.getClass()), "**/*.story", "**/excluded*.story");
+
+    }
+}
+Cały projekt jest do ściągnięcia pod adresem: https://stepik.org/media/attachments/lesson/207560/JBehaveExample2.zip

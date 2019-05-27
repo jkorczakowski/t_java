@@ -1,0 +1,76 @@
+Do zdobycia dzisiaj 1.5 pkt.
+
+Zadania można oddawać do końca dnia z uwagą taką, że:
+
+Osoby, które nie były na zajęciach oraz nie mające usprawiedliwienia otrzymują i tak zero punktów za zadania.
+Po pierwszym deadline, którym jest dzisiaj godzina 14.00 punkty będą maleć liniowo do końca dnia.
+
+
+
+Zadanie 1 (0.2 pkt)
+
+W dowolnym środowisku programistycznym dokończyć testowanie klasy FizzBuzz przy pomocy JUnit 4, trzymając się tamtejszych wymagań.
+
+Zrób tak, aby testy znajdowały się w folderze test w projekcie.
+
+Jako odpowiedź prześlij printscreen z zaliczenia testów, kod testów oraz screen ze struktury projektu.
+
+
+
+Zadanie 2 (0.2 pkt)
+
+Przy pomocy narzędzia JUnit 4 przetestuj program, który sprawdzał czy dana liczba jest liczbą Armstronga (Zadanie 3, laboratorium 1).
+
+Uwzględnij tutaj sytuacje wyjątkowe, takie jak niepoprawne dane (na przykład tekstowe). Przyjmij, że metoda sprawdzająca jako argument będzie przyjmował zmienną typu String.
+
+Jako odpowiedź prześlij printscreen z zaliczenia testów oraz kod testów.
+
+
+
+Zadanie 3 (0.2 pkt)
+
+Przy pomocy narzędzia JUnit 4 przetestuj program, który obliczał wiek na danej planecie (Zadanie 5, laboratorium 1).
+
+Pamiętaj, aby dobrać odpowiednie współczynniki delta przy liczbach zmiennoprzecinkowych.
+
+Dobierz taki test, który będzie uwzględniał deltę przy obliczaniu wieku.
+
+Jako odpowiedź prześlij printscreen z zaliczenia testów oraz kod testów. 
+
+
+
+Zadanie 4 (0.3 pkt)
+
+Przy pomocy narzędzia JUnit 4 przetestuj klasę Point (Zadanie 1, laboratorium 2).
+
+Skorzystaj tutaj z metod Before i After, służące do obsługi obiektów przed i po teście.
+
+Czy istnieje metoda w JUnit 4, która odpala się tylko raz podczas odpalania testów? Jeżeli tak to podaj przykład zastosowania.
+
+Jako odpowiedź prześlij printscreen z zaliczenia testów oraz kod testów oraz odpowiedź na pytanie.
+
+
+
+Zadanie 5 (0.3 pkt)
+
+Przy użyciu narzędzia JUnit 4 napisz klasę testową do zadania, sprawdzającego, czy dany tekst jest Pangramem (Zadanie 4, laboratorium 1). Dopisz wyjątki do tej klasy przewidując przypadki negatywne. Następnie napisz klasą testującą obsługującą te wyjątki.
+
+Dopisz oraz przetestuj metodę, która będzie w argumencie przyjmować listę ciągów tekstowych, a w rezultacie wyświetli listę składającą się z elementów true/false, które będą odpowiadać czy element ii listy jest pangramem, czy nie.
+
+Jako odpowiedź prześlij printscreen z zaliczenia testów, kod testów oraz kod programu.
+
+
+
+Zadanie 6 (0.2 pkt)
+
+W systemie znajdują się pliki FizzBuzz.java oraz FizzBuzzTest.java. Ponadto znajduje się w nim plik jar narzędzia junit oraz hamcrest.
+
+Odpal przy użyciu terminala tekstowego klasę FizzBuzzTest przy użyciu narzędziu JUnit. Wynik zapisz w pliku result.txt (użyj do tego operatora przekierowania >).
+
+
+
+Zadanie 7 (0.1 pkt)
+
+W systemie znajdują się pliki FizzBuzz.java oraz FizzBuzzTest.java oraz BuzzTest.java. Ponadto znajduje się w nim plik jar narzędzia junit oraz hamcrest.
+
+Odpal przy użyciu terminala tekstowego klasę FizzBuzzTest oraz BuzzTest (jednocześnie) przy użyciu narzędziu JUnit. Wynik zapisz w pliku result.txt (użyj do tego operatora przekierowania >).

@@ -1,0 +1,49 @@
+Zadanie 1 (0.1 pkt)
+
+Stwórz klasę reprezentujący stronę WWW do dowolnego wcześniej przeprowadzonego testu. Następnie wykorzystując tę klasę przeprowadź testy. Skorzystaj z PageObject oraz PageFactory.
+
+Jako odpowiedź prześlij printscreen z przejścia testów, klasę strony oraz test strony.
+
+
+
+Zadanie 2 (0.3 pkt)
+
+Stwórz klasę, która będzie reprezentowała panel logujący strony WWW. Wyszukaj dwie strony, które będą te miały te same nazwy pól. Wykorzystując utworzoną klasę przetestuj działanie panelu logującego danych stron.
+
+Pamiętaj aby dane do logowania również były testowe.
+
+Najlepiej, aby utworzona klasa posiadała metodę login służąca do zalogowania się użytkownika.
+
+Przykładowe strony zawierające te same pola logowania: interia.pl oraz amazon.pl
+
+Jako odpowiedź prześlij printscreen z przejścia testów, klasę strony oraz testy stron.
+
+
+
+Zadanie 3 (0.2 pkt)
+
+Bardzo częstym polem występującym na stronach internetowych jest pole wyszukiwania tekstu (search). Znajdź co najmniej dwie strony, które będa zawierać te same nazwy (w sensie kodu źródłowego strony), pól wyszukiwania, a następnie wykorzystując model PageObject oraz PageFactory przetestuj te strony. Testy powinny korzystać z jednej wspólnej klasy (w której powinno znaleźć się odwołania do pola wyszukiwania tekstu).
+
+Jako odpowiedź prześlij printscreen z przejścia testów, klasę strony oraz testy stron.
+
+
+
+Zadanie 4 (0.4 pkt)
+
+Na stronie http://a.testaddressbook.com/ znajduje się strona, która służy do organizowania adresów zamieszkania pewnej ludności jakiegoś kraju. 
+
+Utwórz klasę, która będzie reprezentowała model dodawania adresu do systemu. 
+
+Następnie wykorzystując tę klasę napisz co najmniej 6 testów na działanie tej strony. Testy te mają wykorzystywać formularz dodawania adresu.
+
+Jako odpowiedź prześlij printscreen z przejścia testów, klasę strony oraz testy stron.
+
+
+
+Zadanie 5 (0.5 pkt - dodatkowe)
+
+Poszukaj w sieci informacji o obiektach wzorca PageObject zaimplementowane za pomocą klasy LoadableComponent. 
+
+Napisz zalety takiego rozwiązania oraz przetestuj wykorzystując ten model następującą stronę: https://www.saucedemo.com/index.html (co najmniej 6 testów)
+
+Jako odpowiedź prześlij printscreen z przejścia testów, klasę strony oraz testy stron.

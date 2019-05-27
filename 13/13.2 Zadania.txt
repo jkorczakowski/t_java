@@ -1,0 +1,78 @@
+Zadanie 1 (0.3 pkt)
+
+Utwórz projekt MAVEN korzystając ze szablonu jbehave-quickstart (patrz dział teoria). Następnie skopiuj tutaj dowolne zadanie z poprzednich laboratoriów oraz napisz testy akceptacyjne (minimum po 3 testy), które mają:
+
+Znajdować się w katalogu Stories.
+Mają odpalać się poprzez nazwy klas.
+Mają poprzez scenariusze przekazywać do metod parametry
+Testy mają odpalać się przy pomocy polecenia mvn integration-test (w przypadku nazw klas). Spójrz jak wygląda wynikowy raport z użycia JBehave.
+
+WSKAZÓWKA: Patrz przykład pokazany z laboratorium. Zwróć uwagę na linię (ona źle generuje się przez szablon):
+
+ExamplesTableFactory examplesTableFactory = new ExamplesTableFactory(new LocalizedKeywords(), new LoadFromClasspath(embeddableClass), parameterConverters, null, new TableTransformers());
+Jako odpowiedź prześlij teksty scenariuszy, kod stepów, konfiguracji i wygenerowany raport z JBehave.
+
+
+
+Zadanie 2 (0.3 pkt)
+
+Jednym z innych sposobów przeprowadzania testów parametrycznych w JBehave jest tworzenie tabeli przykładów (przy użyciu słowa kluczowego Examples:) w scenariuszu. Przykład takiego scenariusza wygląda następująco:
+
+Given Mając własny kalkulator liczb całkowitych
+When dodam zmienne <a> i <b>
+Then otrzymam następujący <wynik> 
+
+Examples: 
+|a|b|wynik|
+|2|-2|0|
+|2|2|4|
+|1|5|6|
+Wzorując się na pokazanym przykładzie powyżej napisz conajmniej dwa scenariusze (w innym, osobnym pliku), do dowolnego zadania z poprzednich laboratoriów (oprócz kalkulatora), w której wykorzystasz testy paramatryczne pokazane powyżej. Zastanów się i napisz czy w przypadku zmiennych typu double potrzebne będzie podanie parametru delta.
+
+Jako odpowiedź prześlij teksty scenariuszy, kod stepów, konfiguracji i wygenerowany raport z JBehave.
+
+
+
+Zadanie 3 (0.2 pkt )
+
+Do dowolnego zadania napisz dwa scenariusze testowe, które będą obsługiwać ten sam kod w języku JAVA, ale zawartość scenariusza będzie nieznacznie się różniła.
+
+Na przykład dla scenariuszy:
+
+Scenario: First Scenario
+Given a value x by 5
+Given a value y by 10
+Then sum of value x and y is 15
+
+Scenario: Second Scenario
+Given a value x by 5
+Given a value y by 10
+Then sum of value x and y becomes 15
+Jako odpowiedź prześlij teksty scenariuszy, kod stepów, konfiguracji i wygenerowany raport z JBehave.
+
+
+
+Zadanie 4 (0.2 pkt)
+
+Dopisz scenariusz, który będzie używał preambuły @BeforeScenario oraz @AfterScenario. Następnie napisz przy pomocy słowa kluczowego @AfterScenario dwie funkcje fail() oraz success(), które będą obsługiwać ten sam scenariusz testowy, a ponadto:
+
+fail() wyświetli komunikat w konsoli, że test się nie powiódł.
+success() wyświetli komunikat o pomyślnym zakończeniu testu.
+Jako odpowiedź prześlij teksty scenariuszy, kod stepów, konfiguracji i wygenerowany raport z JBehave.
+
+
+
+Zadanie 5 (0.2 pkt - Dodatkowo)
+
+Napisz scenariusz (w osobnym pliku), który będzie uruchamiał jednocześnie scenariusze z zadania pierwszego oraz drugiego.
+
+Jako odpowiedź prześlij teksty scenariuszy, kod stepów, konfiguracji i wygenerowany raport z JBehave.
+
+
+
+Zadanie 6 (0.3 pkt - Dodatkowo)
+
+Uruchom testy integracyjne w narzędziu Gradle.
+
+Jako odpowiedź prześlij printscreen z powodzenia testów oraz cały projekt.
+

@@ -1,0 +1,57 @@
+Zadanie 1 (0.2 pkt)
+
+Pokazany przykład dokończyć interesującymi testami przy użyciu Mockito.
+
+
+
+Zadanie 2 (0.2 pkt)
+
+Przerobić wszsytkie testy pokazanego przykładu na EasyMock.
+
+
+
+Zadanie 3 (0.5 pkt)
+
+Rozważmy następujący kod:
+
+public class Messenger {
+  private TemplateEngine templateEngine;
+  private MailServer mailServer;
+
+  public Messenger(MailServer mailServer, TemplateEngine templateEngine){
+    this.mailServer = mailServer;
+    this.templateEngine = templateEngine;
+  }
+
+  public void sendMessage(Client client, Template template){
+    String msgContent = templateEngine.prepareMessage(templete, client);
+    mailServer.send(client.getEmail(), msgContent);
+  }
+
+}
+Dopisz wszsytkie potrzebne klasy/interfejsy oraz przetestuj klasę Messenger przy użyciu narzędzi Mockito oraz EasyMock.
+
+
+
+Zadanie 4 (0.6 pkt)
+
+Rozważmy następujący kod:
+
+public class RaceResultService {
+  private Collection<Client> clients = new HashSet<Client>();
+
+  public void addSubscriber(Client client){
+    clients.add(client);
+  }
+
+  public void send(Message message){
+    for (Client client: clients){
+      client.receive(message);
+    }
+  }
+
+  public void removeSubscriber(Client client){
+    clients.remove(client)
+  }
+}
+Dopisz wszsytkie potrzebne klasy/interfejsy oraz przetestuj klasę RaceResultService przy użyciu narzędzi Mockito oraz EasyMock.

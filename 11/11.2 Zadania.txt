@@ -1,0 +1,69 @@
+Zadanie 1 (0.2 pkt)
+
+Dowolne poprzednie zadanie przerobić tak, aby było używany driver z rozszerzenia WebDriverManager oraz SeleniumExtension.
+
+Jako odpowiedź prześlij kod testów oraz printscreen z działania tych testów.
+
+
+
+Zadanie 2 (0.3 pkt)
+
+Napisz metodę boolean isElementPresent(By by), która ma zwracać wartość true, jeśli znaleziono element, a false w przeciwnym przypadku. Przetestuj te metody w którymś z poprzednich zadań. Przetestuj tę metodę wykorzystując narzędzie JUnit5.
+
+Jako odpowiedź prześlij printscreen z powodzenia testów, kod metody oraz kod testów tej metody.
+
+
+
+Zadanie 3 (0.3 pkt)
+
+Napisz testy wykorzystując oczekiwanie jawne przy użyciu wszystkich warunków podanych w tabeli. Możesz użyć zwykłego oczekiwania lub oczekiwania przy użyciu klasy FluentWait.
+
+Jako odpowiedź prześlij printscreen z powodzenia testów oraz kod testów.
+
+
+
+Zadanie 4 (0.2 pkt)
+
+Oczekiwanie niejawne, oprócz znanej nam metody implicityWait(), które zwleka do momenty pojawienia się elementu lub jego wyświetlenia przez ustalony okres przez użytkownika, zawiera również następujące metody:
+
+pageLoadTimeout()
+setScriptTimeout()
+Wyjaśnij w komentarzu znaczenia powyższych metod. Następnie napisz testy, które wykorzystują wyżej wymienione metody oczekiwania niejawnego.
+
+Jako odpowiedź prześlij printscreen z powodzenia testów oraz kod testów.
+
+
+
+Zadanie 5 (0.2 pkt) - dodatkowe
+
+Do dowolnego zadania uruchom testy przy użyciu geckodriver lub chromedriver włączając je w tryb bezinterfejsowy.
+
+Jako odpowiedź prześlij printscreen z powodzenia testów oraz kod testów.
+
+
+
+Zadanie 6 (Dodatkowe - 0.3 pkt)
+
+Czasem synchronizacja jawna wymaga zastosowania niestandardowych oczekiwań (na przykład w przypadku aplikacji, które używają Ajax).
+
+Przykład użycia takiego oczekiwania wygląda następująco:
+
+// Tutaj wejście na dowolną strone (driver.get())
+try{
+  driver.findElement(By.linkText("Text")).click();
+  WebElement message = new WebDriverWait(driver, 5)
+    .until(new ExpectedCondition<WebElement>(){
+      @Override
+      public WebElement apply(WebDriver d){
+        return d.findElement(By.id("id"));
+      }
+    });
+    //assercja, ktora korzysta z elementu message
+} finally {
+    driver.quit();
+}
+Napisz trzy różne testy, korzystając z powyższego schematu.
+
+Wskazówka: ExpectedCondition<WebElement> można zastąpić również jako ExpectedCondition<Boolean>.
+
+Jako odpowiedź prześlij printscreen z powodzenia testów oraz kod testów.
